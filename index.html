@@ -1,10 +1,9 @@
 <!doctype html>
 <!--
-  Marchés publics – notation du prix, id est avocats
+  Marchés publics – notation du prix / Public procurement – price scoring, id est avocats
   Copyright (C) 2026 id est avocats Sàrl
   SPDX-License-Identifier: AGPL-3.0-or-later
-  Les tableaux et textes juridiques sont en outre mis à disposition sous licence CC BY-NC 4.0.
-  Legal tables and texts are also made available under the CC BY-NC 4.0 licence.
+  Les textes juridiques sont en outre mis à disposition sous licence CC BY-NC 4.0. Legal texts are also available under CC BY-NC 4.0.
   Ce programme est distribué sans aucune garantie. Voir le fichier LICENSE.
 -->
 <html lang="fr">
@@ -12,9 +11,10 @@
 <meta charset="utf-8">
 <script>try { var t = localStorage.getItem('idest-notation:theme'); if (t) { t = JSON.parse(t); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } } catch (e) {}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Simulation de la notation du prix et du classement des offres en marchés publics (Guide romand : T1,5, T2, T3, T200, T300, Tmoyenne), avec classement, seuils de bascule et comparaison des méthodes. id est avocats.">
-<title>Marchés publics – notation du prix, id est avocats</title>
+<meta name="description" content="Choisir la méthode de notation du prix d’un appel d’offres (Guide romand T1,5, T2, T3, T200, T300, Tmoyenne, proportionnelle, linéaire) : impact d’un écart de prix selon la méthode et la pondération. Price scoring method for public tenders. id est avocats.">
+<title>Marchés publics – notation du prix – id est avocats</title>
 <style>
+
 
 
 :root{
@@ -178,23 +178,62 @@ details.mini p,details.mini li{font-size:12.5px;color:var(--muted);line-height:1
 details.mini ul{margin:6px 0 0;padding-left:18px}
 @media (max-width:520px){.card .grid3{grid-template-columns:1fr 1fr}.card .grid3 > :first-child{grid-column:1 / -1}}
 
+.note-lang{font-size:12.5px;color:var(--muted);margin-top:4px}
 .toggles{display:flex;gap:8px;flex-wrap:wrap}
 .range{font-size:14px;color:var(--muted);margin-bottom:8px}
-.formula{font-size:13px;background:var(--legal-bg);border-radius:8px;padding:8px 10px;margin-top:8px;line-height:1.45}
-table.dc td.l, table.dc th.l{text-align:left}
-table.dc tr.win td{font-weight:700}
-table.dc tr.hl td{background:var(--lrose)}
-:root[data-theme="dark"] table.dc tr.hl td{background:#3A1424}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) table.dc tr.hl td{background:#3A1424}}
-table.dc td.diff{color:var(--rose);font-weight:700}
-.chart{width:100%;height:auto;display:block;margin-top:6px}
+.kpi small{display:block;font-size:11.5px;color:var(--muted);font-weight:400}
+.excl{font-size:12.5px;color:var(--muted);margin-top:8px}
+table.dc td.ref{white-space:normal;text-align:left;color:var(--muted);font-size:12.5px;min-width:180px}
+.oc{border:1px solid var(--line);border-radius:12px;padding:14px 16px 12px;background:var(--panel);margin:0 0 14px}
+.oc .och{font-size:14px;margin:14px 0 6px}
+.oc .kpis{margin-top:10px}
+.oc.win{background:linear-gradient(0deg,var(--panel),var(--panel)),var(--panel)}
+.oc.fail{border-top:4px solid var(--rose)}
+.oc.win{border-top:4px solid var(--turq)}
+.oc .total{font-size:clamp(28px,3.4vw,38px);margin:2px 0 2px}
+.oc.win .total{color:var(--turq)}
+.oc .range{font-size:12.5px;margin-bottom:4px}
+.oclines{list-style:none;padding:0;margin:6px 0 0;font-size:13.5px;max-width:560px}
+.oclines li{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-bottom:1px dotted var(--line)}
+.oclines li span:last-child{white-space:nowrap;font-variant-numeric:tabular-nums}
+.oclines li.tot{font-weight:700;border-bottom:0}
+.oclines li.info{color:var(--muted);font-style:italic}
+.ocnote{font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.4}
+#pathTable{font-size:12.5px}
+#pathTable td,#pathTable th{padding-left:6px;padding-right:6px}
+.pathpanel{border-left:3px solid var(--turq);padding:2px 0 4px 12px;margin:4px 0 10px}
+.pathpanel .sub{margin:0 0 6px 26px}
+table.dc tr.main td{font-weight:700}
+
+.toggles{display:flex;gap:8px;flex-wrap:wrap}
+.rowlist{display:flex;flex-direction:column;gap:6px;margin:4px 0 6px}
+.crow{display:grid;grid-template-columns:minmax(0,1fr) 92px 34px;gap:6px;align-items:center}
+.crow input{margin:0}
+.crow .del{all:unset;cursor:pointer;color:var(--muted);font-size:18px;line-height:1;text-align:center;border-radius:6px;padding:4px}
+.crow .del:hover{color:var(--rose)} .crow .del:focus-visible{outline:2px solid var(--rose)}
+.orow{display:grid;grid-template-columns:70px minmax(0,1fr) 34px;gap:6px;align-items:center}
+.orow .olab{font-size:13px;color:var(--muted)}
+.sum{font-size:12.5px;margin:2px 0 6px}
+.sum.bad{color:var(--bad-ink);font-weight:600}
+.formula{font-size:13px;background:var(--legal-bg);border-radius:8px;padding:8px 10px;margin:6px 0 2px}
+.headline{border:1.5px solid var(--line);border-left:6px solid var(--rose);border-radius:12px;padding:12px 16px 10px;margin-bottom:14px}
+.headline .total{font-size:clamp(26px,3.2vw,34px);margin:2px 0}
+.headline .range{font-size:13px}
+.chart{width:100%;height:auto;margin:6px 0 4px;display:block}
 .chart text{font-family:var(--font);font-size:11px;fill:var(--muted)}
-.chart .axis{stroke:var(--line);stroke-width:1}
-.chart .grid{stroke:var(--line);stroke-width:.5;stroke-dasharray:2 3}
-.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);margin-top:6px}
-.legend i{display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:5px;border-radius:2px}
-.muted{color:var(--muted);font-size:12.5px}
-.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.chart .ax{stroke:var(--line);stroke-width:1}
+.chart .grid{stroke:var(--line);stroke-width:.5;stroke-dasharray:3 3}
+.chart .sel{stroke:var(--rose);stroke-width:2.6;fill:none}
+.chart .oth{stroke:var(--muted);stroke-width:1;fill:none;opacity:.7}
+.chart .lbl{font-size:10.5px}
+.chart .lbl.sel{fill:var(--rose);font-weight:700;stroke:none}
+.chart .dot{fill:var(--turq)}
+.chart .dotl{fill:var(--turq);font-weight:700}
+table.dc td.num,table.dc th.num{text-align:right;white-space:nowrap}
+.res h3{font-size:15.5px;margin:16px 0 6px}
+.res .hint{margin:2px 0 8px}
+.print-only{display:none}
+@media print{.toggles,.caution,header p,.btnrow,.copyblock,details{display:none!important}.grid{display:block}}
 </style>
 </head>
 <body>
@@ -204,12 +243,15 @@ table.dc td.diff{color:var(--rose);font-weight:700}
     <div class="headrow">
       <div class="firm">id est avocats</div>
       <div class="toggles">
+        <div class="theme" role="group" data-i18n-aria="langGroup" aria-label="Langue">
+          <button type="button" data-lang-set="fr" lang="fr">FR</button><button type="button" data-lang-set="en" lang="en">EN</button>
+        </div>
         <div class="theme" role="group" data-i18n-aria="themeGroup" aria-label="Affichage">
           <button type="button" data-theme-set="auto" data-i18n="themeAuto">Auto</button><button type="button" data-theme-set="light" data-i18n="themeLight">Clair</button><button type="button" data-theme-set="dark" data-i18n="themeDark">Sombre</button>
         </div>
       </div>
     </div>
-    <h1><span data-i18n="title">Marchés publics – notation du prix</span><span class="beta">beta</span></h1>
+    <h1><span data-i18n="title"></span><span class="beta">beta</span></h1>
     <p data-i18n="subtitle"></p>
     <div class="caution" role="note" data-i18n-html="caution"></div>
   </header>
@@ -217,110 +259,96 @@ table.dc td.diff{color:var(--rose);font-weight:700}
   <div class="grid">
     <form class="panel" id="form" autocomplete="off" onsubmit="return false">
       <fieldset>
-        <legend><span class="n">1</span><span data-i18n="lgMethod"></span></legend>
+        <legend><span class="n">1</span><span data-i18n="lgCriteria"></span></legend>
+        <label for="weight" data-i18n="lbWeight"></label>
+        <input id="weight" type="number" min="0" max="100" step="1" value="40" inputmode="numeric">
+        <div class="hint" data-i18n="hintWeight"></div>
+        <label data-i18n="lbOthers"></label>
+        <div class="rowlist" id="others"></div>
+        <div class="sum" id="sumTxt"></div>
+        <button type="button" class="add" id="addOther" data-i18n="addOther"></button>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="n">2</span><span data-i18n="lgMethod"></span></legend>
         <label for="method" data-i18n="lbMethod"></label>
         <select id="method">
-          <option value="T2" data-i18n="mT2"></option>
-          <option value="T15" data-i18n="mT15"></option>
-          <option value="T3" data-i18n="mT3"></option>
-          <option value="T200" data-i18n="mT200"></option>
-          <option value="T300" data-i18n="mT300"></option>
-          <option value="Tmoy" data-i18n="mTmoy"></option>
-          <option value="T1" data-i18n="mT1"></option>
-          <option value="Tlin" data-i18n="mTlin"></option>
+          <option value="T2">T2</option><option value="T15">T1,5</option><option value="T3">T3</option><option value="T200">T200</option><option value="T300">T300</option><option value="Tmoy" data-i18n="mTmoy">Tmoyenne</option><option value="T1" data-i18n="mT1">Proportionnelle</option><option value="Tlin" data-i18n="mTlin">Linéaire paramétrable</option>
         </select>
+        <div class="hint" id="mDesc"></div>
         <div class="formula" id="formula"></div>
-        <div id="tlinBox" hidden>
+        <div id="xBox" hidden>
           <label for="x" data-i18n="lbX"></label>
-          <input id="x" type="number" min="1" max="1000" step="1" value="50" inputmode="numeric">
+          <input id="x" type="number" min="1" max="500" step="1" value="50" inputmode="numeric">
         </div>
         <div id="tmoyBox" hidden>
           <label for="tmoyMode" data-i18n="lbTmoyMode"></label>
           <select id="tmoyMode"><option value="guide" data-i18n="tmGuide"></option><option value="mean" data-i18n="tmMean"></option></select>
           <label for="est" data-i18n="lbEst"></label>
-          <input id="est" type="number" min="0" step="1" inputmode="numeric" placeholder="—">
+          <input id="est" type="number" min="0" step="1000" inputmode="numeric" placeholder="—">
           <div class="hint" data-i18n="hintEst"></div>
         </div>
-        <label for="weight" data-i18n="lbWeight"></label>
-        <input id="weight" type="number" min="0" max="100" step="1" value="40" inputmode="numeric">
-        <div class="hint" id="weightHint"></div>
-        <label for="round" data-i18n="lbRound"></label>
-        <select id="round"><option value="none" data-i18n="rdNone"></option><option value="2" data-i18n="rd2"></option><option value="1" data-i18n="rd1"></option></select>
+        <label class="check"><input type="checkbox" id="cmp" checked> <span data-i18n="lbCmp"></span></label>
       </fieldset>
 
       <fieldset>
-        <legend><span class="n">2</span><span data-i18n="lgOffers"></span></legend>
-        <label for="otherMode" data-i18n="lbOtherMode"></label>
-        <select id="otherMode"><option value="note" data-i18n="omNote"></option><option value="points" data-i18n="omPoints"></option></select>
-        <div class="hint" data-i18n="hintOffers"></div>
-        <div class="cards" id="offers" style="margin-top:10px"></div>
-        <div class="btnrow">
-          <button type="button" class="add" id="addOffer" data-i18n="addOffer"></button>
-          <button type="button" class="add" id="example" data-i18n="example"></button>
-        </div>
+        <legend><span class="n">3</span><span data-i18n="lgOffers"></span> <span class="opt" data-i18n="optional"></span></legend>
+        <div class="hint" style="margin-top:0" data-i18n="hintOffers"></div>
+        <div class="rowlist" id="offers"></div>
+        <div class="btnrow"><button type="button" class="add" id="addOffer" data-i18n="addOffer"></button><button type="button" class="btn small ghost" id="example" data-i18n="example"></button><button type="button" class="btn small ghost" id="clearOffers" data-i18n="clearOffers"></button></div>
       </fieldset>
     </form>
 
-    <section class="panel result" aria-live="polite" aria-labelledby="rTitle">
-      <div class="r-label" id="rTitle" data-i18n="rTitle"></div>
-      <div class="total empty" id="rTotal"></div>
-      <div class="range" id="rRange"></div>
-      <div class="kpis" id="rKpis"></div>
+    <section class="panel result res" aria-live="polite">
+      <div class="headline">
+        <div class="r-label" id="hlLabel"></div>
+        <div class="total" id="hlTotal"></div>
+        <div class="range" id="hlRange"></div>
+      </div>
       <div class="alerts" id="rAlerts"></div>
-      <div id="rDetails" hidden>
-        <h2 data-i18n="hRank"></h2>
-        <div class="tablewrap"><table class="dc" id="tRank"></table></div>
-        <h2 data-i18n="hThresh"></h2>
-        <p class="muted" data-i18n="introThresh"></p>
-        <div class="tablewrap"><table class="dc" id="tThresh"></table></div>
-        <h2 data-i18n="hCompare"></h2>
-        <p class="muted" data-i18n="introCompare"></p>
-        <div class="tablewrap"><table class="dc" id="tCompare"></table></div>
-        <h2 data-i18n="hChart"></h2>
-        <svg class="chart" id="chart" viewBox="0 0 640 300" role="img"></svg>
-        <div class="legend" id="legend"></div>
-        <div class="copyblock">
-          <div class="cb-head"><h3 data-i18n="hSummary"></h3><button type="button" class="btn small" data-copy="txtSum" data-i18n="copy"></button></div>
-          <textarea id="txtSum" readonly></textarea>
+      <h3 data-i18n="hChart"></h3>
+      <div id="chartWrap"></div>
+      <p class="hint" id="chartHint"></p>
+      <h3 data-i18n="hImpact"></h3>
+      <div class="tablewrap"><table class="dc" id="impact"></table></div>
+      <p class="hint" data-i18n="hintImpact"></p>
+      <div id="cmpOut">
+        <h3 data-i18n="hCmp"></h3>
+        <div class="tablewrap"><table class="dc" id="cmpTable"></table></div>
+      </div>
+      <div id="offOut" hidden>
+        <h3 data-i18n="hOffers"></h3>
+        <div class="tablewrap"><table class="dc" id="offTable"></table></div>
+        <div id="offCmpOut">
+          <h3 data-i18n="hOffCmp"></h3>
+          <div class="tablewrap"><table class="dc" id="offCmp"></table></div>
         </div>
       </div>
-      <details class="mini">
-        <summary data-i18n="hPrinciples"></summary>
-        <ul class="rules" id="principles"></ul>
-      </details>
-      <details class="mini" id="disclaimer">
-        <summary data-i18n="hDisclaimer"></summary>
-        <div id="disclaimerText"></div>
-      </details>
-      <div class="actions">
-        <button class="btn ghost" id="print" type="button" data-i18n="print"></button>
-        <button class="btn ghost" id="reset" type="button" data-i18n="reset"></button>
-      </div>
+      <div class="copyblock"><div class="cb-head"><h3 data-i18n="hSummary"></h3><button type="button" class="btn small" id="copySum" data-i18n="copy"></button></div><textarea id="txtSum" readonly rows="14"></textarea></div>
+      <div class="copyblock"><div class="cb-head"><h3 data-i18n="hDoc"></h3><button type="button" class="btn small" id="copyDoc" data-i18n="copy"></button></div><textarea id="txtDoc" readonly rows="6"></textarea></div>
+      <details class="mini"><summary data-i18n="hPrinciples"></summary><ul class="rules" id="principles"></ul></details>
+      <details class="mini"><summary data-i18n="hDisclaimer"></summary><div id="disclaimerText"></div></details>
+      <div class="btnrow"><button type="button" class="btn ghost" id="print" data-i18n="print"></button><button type="button" class="btn ghost" id="reset" data-i18n="reset"></button></div>
     </section>
   </div>
 
-  <footer>
-    <div class="inner">
-      <p data-i18n-html="licence"></p>
-      <p id="srcLink"></p>
-    </div>
-  </footer>
+  <footer><div class="inner"><p data-i18n-html="licence"></p><p id="srcLink"></p></div></footer>
 </div>
 <div class="bottomband"><div class="wrap"><span>© 2026 id est avocats Sàrl</span><span data-i18n="band"></span></div></div>
 
 <script>
-// ===== Marchés publics – notation du prix : moteur =====
-// id est avocats, outil d'aide au calcul. À vérifier dans chaque cas.
+// ===== Marchés publics – notation du prix : moteur (version 2) =====
+// id est avocats, outil d'aide à la décision. À vérifier dans chaque cas.
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // Méthodes : Guide romand pour les marchés publics (CROMP), annexe T2 (version du 1er mai 2026) ;
 // méthode proportionnelle et méthode linéaire paramétrable.
 const Notation = (() => {
   const NMAX = 5;
-  const METHODS = ['T15', 'T2', 'T3', 'T200', 'T300', 'Tmoy', 'T1', 'Tlin'];
+  const METHODS = ['T2', 'T15', 'T3', 'T200', 'T300', 'Tmoy', 'T1', 'Tlin'];
+  const GAPS = [5, 10, 15, 20, 30, 50];
   const clamp = x => Math.max(0, Math.min(NMAX, x));
-  const r4 = x => Math.round(x * 1e4) / 1e4;
 
-  // c : { pmin, pmean, n, est, x, tmoyMode: 'guide' | 'mean' }
+  // Note (0 à 5) d'une offre au prix P ; c : { pmin, pmean, n, est, x, tmoyMode }
   function noteOf(m, P, c) {
     const q = c.pmin / P;
     switch (m) {
@@ -339,421 +367,422 @@ const Notation = (() => {
     }
     return NaN;
   }
-  const roundNote = (v, rd) => rd === '2' ? Math.round(v * 100) / 100 : rd === '1' ? Math.round(v * 10) / 10 : v;
-
-  // cfg : { method, weight, offers:[{name, price, other}], otherMode:'note'|'points', est, x, tmoyMode, round }
-  function evaluate(cfg, method) {
-    const m = method || cfg.method, w = cfg.weight;
-    const offers = cfg.offers.filter(o => o.price > 0);
-    const n = offers.length;
-    if (!n) return null;
-    const prices = offers.map(o => o.price);
-    const pmin = Math.min(...prices), pmean = prices.reduce((a, b) => a + b, 0) / n;
-    const c = { pmin, pmean, n, est: cfg.est, x: cfg.x, tmoyMode: cfg.tmoyMode };
-    const rows = offers.map(o => {
-      const raw = noteOf(m, o.price, c);
-      const note = Number.isFinite(raw) ? roundNote(raw, cfg.round) : NaN;
-      const otherPts = cfg.otherMode === 'points' ? (o.other || 0) : (o.other || 0) * (100 - w);
-      const pricePts = note * w;
-      return { name: o.name, price: o.price, id: o.id, gap: o.price / pmin - 1, raw, note, pricePts, otherPts, total: pricePts + otherPts, other: o.other || 0 };
-    });
-    const sorted = [...rows].sort((a, b) => b.total - a.total);
-    rows.forEach(r => { r.rank = 1 + sorted.filter(s => r4(s.total) > r4(r.total)).length; });
-    return { method: m, rows, pmin, pmean, n, ok: rows.every(r => Number.isFinite(r.note)) };
-  }
-
-  // Total d’une offre i lorsque son prix vaut P (les autres offres inchangées), et meilleur total des autres
-  function margin(cfg, i, P) {
-    const offers = cfg.offers.filter(o => o.price > 0).map((o, k) => k === i ? Object.assign({}, o, { price: P }) : o);
-    const ev = evaluate(Object.assign({}, cfg, { offers }));
-    const me = ev.rows[i], best = Math.max(...ev.rows.filter((_, k) => k !== i).map(r => r.total));
-    return me.total - best;
-  }
-  // Seuils de bascule (méthode annoncée)
-  function thresholds(cfg) {
-    const ev = evaluate(cfg);
-    if (!ev || ev.n < 2 || !ev.ok) return null;
-    const w = cfg.weight;
-    return ev.rows.map((r, i) => {
-      const out = { name: r.name, rank: r.rank };
-      if (r.rank === 1) {
-        // prix maximal pour rester premier
-        let lo = r.price, hi = r.price * 10;
-        if (margin(cfg, i, hi) >= 0) out.maxPrice = Infinity;
-        else { for (let k = 0; k < 60; k++) { const mid = (lo + hi) / 2; if (margin(cfg, i, mid) >= 0) lo = mid; else hi = mid; } out.maxPrice = lo; }
-        out.otherMin = null;
-      } else {
-        let hi = r.price, lo = r.price * 0.001;
-        if (margin(cfg, i, lo) < 0) out.needPrice = null;
-        else { for (let k = 0; k < 60; k++) { const mid = (lo + hi) / 2; if (margin(cfg, i, mid) >= 0) lo = mid; else hi = mid; } out.needPrice = lo; }
-        // note ou points nécessaires aux autres critères, prix inchangé
-        const best = Math.max(...ev.rows.filter((_, k) => k !== i).map(x => x.total));
-        const needPts = best - r.pricePts;
-        out.needOther = cfg.otherMode === 'points' ? needPts : (100 - w > 0 ? needPts / (100 - w) : Infinity);
-        out.otherMax = cfg.otherMode === 'points' ? null : NMAX;
+  // Note en fonction de l'écart g (en %) par rapport à l'offre la moins chère, prix fictif 100
+  const noteGap = (m, g, c) => noteOf(m, 100 * (1 + g / 100), Object.assign({ pmin: 100, pmean: 100, n: 99 }, c || {}));
+  // Points sur 100 : note ÷ 5 × pondération du prix
+  const pts = (note, w) => Number.isFinite(note) ? note / NMAX * w : NaN;
+  // Avance nécessaire sur les autres critères (note moyenne pondérée, sur 5) pour compenser des points perdus
+  const needed = (lost, w) => w >= 100 ? Infinity : lost / (100 - w) * NMAX;
+  // Écart (%) à partir duquel la note vaut 0 (null si jamais)
+  function zeroGap(m, c) {
+    switch (m) {
+      case 'T200': return 100;
+      case 'T300': return 200;
+      case 'Tlin': return Math.max(1, (c && c.x) || 100);
+      case 'Tmoy': {
+        if (!c || !c.pmin) return null;
+        if (c.tmoyMode !== 'mean' && c.n < 5) return c.est > 0 ? NMAX * c.est / c.pmin * 100 : null;
+        return c.pmean > c.pmin ? NMAX * (c.pmean - c.pmin) / c.pmin * 100 : null;
       }
-      return out;
-    });
-  }
-
-  // Avertissements
-  function checks(cfg, ev) {
-    const notes = [];
-    const w = cfg.weight;
-    if (w < 20 || w > 80) notes.push({ k: 'weightRange', lvl: 'warn' });
-    if (cfg.method === 'Tmoy' && ev.n < 5) notes.push({ k: cfg.tmoyMode === 'mean' ? 'tmoyMeanFew' : (cfg.est > 0 ? 'tmoyEst' : 'tmoyNoEst'), lvl: cfg.tmoyMode !== 'mean' && !(cfg.est > 0) ? 'bad' : 'warn' });
-    if (cfg.method === 'Tmoy' && ev.n >= 5) {
-      const big = ev.rows.some(r => r.gap > 1);
-      if (big) notes.push({ k: 'tmoyOutlier', lvl: 'warn' });
     }
-    if (ev.n === 2 && cfg.method !== 'Tmoy') notes.push({ k: 'twoOffers', lvl: 'info' });
-    const low = [];
-    if (ev.n >= 3) ev.rows.forEach((r, i) => {
-      const others = ev.rows.filter((_, k) => k !== i).map(x => x.price);
-      const mo = others.reduce((a, b) => a + b, 0) / others.length;
-      if (r.price < 0.7 * mo) low.push({ name: r.name, pct: 1 - r.price / mo });
+    return null;
+  }
+  // Tableau d'impact pour les écarts usuels (sans prix) ; Tmoyenne exclue car elle dépend des offres
+  function impact(cfg, m) {
+    const method = m || cfg.method, w = cfg.weight;
+    if (method === 'Tmoy' && !(cfg.offers && cfg.offers.length)) return null;
+    const c = ctx(cfg);
+    return GAPS.map(g => {
+      const note = method === 'Tmoy' ? noteOf(method, c.pmin * (1 + g / 100), c) : noteGap(method, g, cfg);
+      const p = pts(note, w), lost = w - p;
+      return { gap: g, note, pts: p, lost, needed: needed(lost, w) };
     });
-    low.forEach(l => notes.push({ k: 'abnLow', lvl: 'warn', data: l }));
-    const zeros = ev.rows.filter(r => r.note === 0);
-    if (zeros.length) notes.push({ k: 'zeroNote', lvl: 'info', data: zeros.map(z => z.name) });
-    if (cfg.otherMode !== 'points' && ev.rows.some(r => r.other < 0 || r.other > NMAX)) notes.push({ k: 'otherRange', lvl: 'bad' });
-    const top = ev.rows.filter(r => r.rank === 1);
-    if (top.length > 1) notes.push({ k: 'tieTop', lvl: 'warn' });
-    // poids effectif du prix : écart de points prix entre la moins chère et la plus chère, rapporté au poids maximal
-    if (ev.n >= 2) {
-      const spread = Math.max(...ev.rows.map(r => r.pricePts)) - Math.min(...ev.rows.map(r => r.pricePts));
-      const gapMax = Math.max(...ev.rows.map(r => r.gap));
-      if (gapMax >= 0.2 && spread < 0.2 * w * NMAX) notes.push({ k: 'flat', lvl: 'warn', data: { gap: gapMax, share: spread / (w * NMAX) } });
+  }
+  function ctx(cfg) {
+    const prices = (cfg.offers || []).map(o => o.price).filter(p => p > 0);
+    const n = prices.length;
+    const pmin = n ? Math.min(...prices) : 100, pmean = n ? prices.reduce((a, b) => a + b, 0) / n : 100;
+    return { pmin, pmean, n, est: cfg.est, x: cfg.x, tmoyMode: cfg.tmoyMode };
+  }
+  // Offres prévues : note, points et points perdus par rapport à l'offre la moins chère, pour une méthode
+  function evaluate(cfg, m) {
+    const method = m || cfg.method, w = cfg.weight, c = ctx(cfg);
+    if (!c.n) return null;
+    const rows = (cfg.offers || []).filter(o => o.price > 0).map(o => {
+      const note = noteOf(method, o.price, c), p = pts(note, w), lost = w - p;
+      return { id: o.id, price: o.price, gap: (o.price / c.pmin - 1) * 100, note, pts: p, lost, needed: needed(lost, w) };
+    });
+    return { method, rows, pmin: c.pmin, pmean: c.pmean, n: c.n, ok: rows.every(r => Number.isFinite(r.note)), zero: zeroGap(method, c) };
+  }
+  // Courbe des points en fonction de l'écart (0 à gmax %)
+  function curve(cfg, m, gmax, step) {
+    const method = m || cfg.method, c = ctx(cfg), out = [];
+    for (let g = 0; g <= gmax + 1e-9; g += step) {
+      const note = method === 'Tmoy' ? (c.n ? noteOf(method, c.pmin * (1 + g / 100), c) : NaN) : noteGap(method, g, cfg);
+      out.push({ g, pts: pts(note, cfg.weight) });
     }
-    return notes;
+    return out;
   }
-
-  function compareAll(cfg) {
-    return METHODS.map(m => {
-      const ev = evaluate(cfg, m);
-      if (!ev || !ev.ok) return { method: m, ok: false };
-      const winners = ev.rows.filter(r => r.rank === 1).map(r => r.name);
-      return { method: m, ok: true, rows: ev.rows, winners };
-    });
+  // Contrôles
+  function checks(cfg) {
+    const a = [], w = cfg.weight, c = ctx(cfg), n = c.n;
+    if (w < 20 || w > 80) a.push({ lvl: 'warn', k: 'weightRange' });
+    if (cfg.others && Math.abs(cfg.others.reduce((s, o) => s + (o.weight || 0), 0) + w - 100) > 0.01) a.push({ lvl: 'warn', k: 'weightSum' });
+    if (cfg.method === 'Tmoy') {
+      if (n === 0) a.push({ lvl: 'info', k: 'tmoyNeedsPrices' });
+      else if (n < 5) a.push({ lvl: 'warn', k: cfg.tmoyMode === 'mean' ? 'tmoyMeanFew' : 'tmoyEst' });
+    }
+    if (cfg.method === 'Tlin') a.push({ lvl: 'info', k: 'linX', data: Math.max(1, cfg.x || 100) });
+    if (n >= 2) {
+      const ev = evaluate(cfg);
+      if (ev && ev.ok) {
+        const zeros = ev.rows.filter(r => r.note <= 0).length;
+        if (zeros >= 1 && n - zeros >= 1) a.push({ lvl: 'warn', k: 'zeroNotes', data: zeros });
+        const maxGap = Math.max(...ev.rows.map(r => r.gap));
+        if (ev.zero !== null && ev.zero < maxGap) a.push({ lvl: 'info', k: 'rangeCover', data: Math.round(ev.zero) });
+        if (n === 2) a.push({ lvl: 'info', k: 'twoOffers' });
+      }
+      if (ev && !ev.ok) a.push({ lvl: 'warn', k: 'tmoyNoEst' });
+    }
+    a.push({ lvl: 'info', k: 'announce' });
+    return a;
   }
-  // Courbe d’une méthode pour un écart de prix donné (0 = prix le plus bas)
-  function curve(cfg, m, gap, ev) {
-    const c = { pmin: ev.pmin, pmean: ev.pmean, n: ev.n, est: cfg.est, x: cfg.x, tmoyMode: cfg.tmoyMode };
-    return noteOf(m, ev.pmin * (1 + gap), c);
-  }
-  return { METHODS, NMAX, noteOf, evaluate, thresholds, checks, compareAll, curve };
+  return { NMAX, METHODS, GAPS, noteOf, noteGap, pts, needed, zeroGap, impact, evaluate, curve, checks };
 })();
 
 </script>
 <script>
 (() => {
 const $ = s => document.querySelector(s);
-const N = Notation;
 const store = { get(k, d) { try { const v = localStorage.getItem('idest-notation:' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }, set(k, v) { try { localStorage.setItem('idest-notation:' + k, JSON.stringify(v)); } catch (e) {} } };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-const LANG = 'fr';
-
+let LANG = store.get('lang', null) || ((navigator.language || 'fr').toLowerCase().startsWith('fr') ? 'fr' : 'en');
 const STR = {
   fr: {
-    pageTitle: 'Marchés publics – notation du prix, id est avocats', themeGroup: 'Affichage', themeAuto: 'Auto', themeLight: 'Clair', themeDark: 'Sombre',
+    pageTitle: 'Marchés publics – notation du prix – id est avocats', langGroup: 'Langue', themeGroup: 'Affichage', themeAuto: 'Auto', themeLight: 'Clair', themeDark: 'Sombre',
     title: 'Marchés publics – notation du prix',
-    subtitle: 'Simulation de la notation du prix et du classement des offres en marchés publics, selon les méthodes du Guide romand et des méthodes linéaires paramétrables : classement, seuils de bascule et comparaison des méthodes.',
-    caution: '<b>Aide au calcul uniquement.</b> Seule la méthode annoncée dans les documents d’appel d’offres fait foi. Voir l’avertissement complet sous le résultat.',
-    lgMethod: 'Méthode et pondération', lbMethod: 'Méthode de notation du prix annoncée',
-    mT2: 'T2 – au carré (Guide romand)', mT15: 'T1,5 – exposant 1,5 (Guide romand)', mT3: 'T3 – au cube (Guide romand)', mT200: 'T200 – linéaire, note 0 au double du prix le plus bas (Guide romand)', mT300: 'T300 – linéaire, note 0 au triple du prix le plus bas (Guide romand)', mTmoy: 'Tmoyenne – linéaire selon le prix moyen (Guide romand)', mT1: 'Proportionnelle – prix le plus bas divisé par le prix', mTlin: 'Linéaire paramétrable – note 0 à x % au-dessus du prix le plus bas',
-    short: { T15: 'T1,5', T2: 'T2', T3: 'T3', T200: 'T200', T300: 'T300', Tmoy: 'Tmoyenne', T1: 'Proportionnelle', Tlin: 'Linéaire' },
+    subtitle: 'Au moment de rédiger les documents d’appel d’offres : quel est l’effet d’un écart de prix selon la méthode de notation et la pondération choisies, et combien une offre plus chère doit-elle gagner sur les autres critères pour compenser ? Méthodes du Guide romand (T1,5, T2, T3, T200, T300, Tmoyenne), proportionnelle et linéaire.',
+    caution: '<b>Aide à la décision uniquement.</b> L’outil ne remplace pas l’appréciation de l’adjudicateur ni la vérification des documents d’appel d’offres. Voir l’avertissement sous le résultat.',
+    lgCriteria: 'Critères d’adjudication', lbWeight: 'Pondération du prix (%)', hintWeight: 'En principe entre 20 % et 80 % (ATF 143 II 553) ; au moins 60 % pour des prestations peu complexes (TF 2C_802/2021).',
+    lbOthers: 'Autres critères', lbCritName: 'Critère', lbCritWeight: 'Pondération', phCrit: 'Critère', addOther: '+ Ajouter un critère', remove: 'Supprimer',
+    defOthers: ['Qualité technique', 'Références et organisation'],
+    sumTxt: (w, o, tot) => `Prix ${w} % + autres critères ${o} % = ${tot} %`,
+    lgMethod: 'Méthode de notation du prix', lbMethod: 'Méthode', optional: '(facultatif)',
+    mLabel: { T2: 'T2', T15: 'T1,5', T3: 'T3', T200: 'T200', T300: 'T300', Tmoy: 'Tmoyenne', T1: 'Proportionnelle', Tlin: 'Linéaire' }, mTmoy: 'Tmoyenne', mT1: 'Proportionnelle', mTlin: 'Linéaire paramétrable',
+    mDesc: {
+      T2: 'Méthode la plus courante du Guide romand : la note décroît avec le carré du rapport des prix. Pente moyenne, adaptée à la plupart des marchés.',
+      T15: 'Pente plus douce que T2 : le prix pèse moins, ce qui laisse plus de place aux critères de qualité.',
+      T3: 'Pente forte : le prix est très discriminant ; adaptée aux prestations standardisées où la qualité varie peu.',
+      T200: 'Décroissance linéaire jusqu’à la note 0 au double du prix le plus bas. Pente douce.',
+      T300: 'Décroissance linéaire jusqu’à la note 0 au triple du prix le plus bas. Pente très douce : le prix compte peu.',
+      Tmoy: 'La note dépend de l’écart entre le prix le plus bas et le prix moyen des offres : elle ne peut être anticipée qu’avec des prix prévus. Avec moins de cinq offres, le Guide romand utilise le montant estimé par l’adjudicateur.',
+      T1: 'Note proportionnelle au rapport des prix. Pente douce, surtout pour les écarts importants.',
+      Tlin: 'Décroissance linéaire jusqu’à la note 0 pour un écart de x % que vous fixez. Permet de calibrer la pente sur la fourchette de prix attendue.',
+    },
     formula: {
       T15: 'Note = 5 × (prix le plus bas ÷ prix de l’offre)<sup>1,5</sup>',
       T2: 'Note = 5 × (prix le plus bas ÷ prix de l’offre)<sup>2</sup>',
       T3: 'Note = 5 × (prix le plus bas ÷ prix de l’offre)<sup>3</sup>',
       T200: 'Note = 5 × (2 × prix le plus bas − prix de l’offre) ÷ prix le plus bas ; note 0 dès le double du prix le plus bas',
       T300: 'Note = 5 × (3 × prix le plus bas − prix de l’offre) ÷ (2 × prix le plus bas) ; note 0 dès le triple du prix le plus bas',
-      Tmoy: 'Note = 5 − (prix de l’offre − prix le plus bas) ÷ (prix moyen − prix le plus bas). Selon le Guide romand, moins de 5 offres : 5 − (prix de l’offre − prix le plus bas) ÷ montant estimé par l’adjudicateur',
+      Tmoy: 'Note = 5 − (prix de l’offre − prix le plus bas) ÷ (prix moyen − prix le plus bas) ; selon le Guide romand, avec moins de 5 offres : 5 − (prix de l’offre − prix le plus bas) ÷ montant estimé par l’adjudicateur',
       T1: 'Note = 5 × prix le plus bas ÷ prix de l’offre',
       Tlin: 'Note = 5 × [1 − (prix de l’offre − prix le plus bas) ÷ (prix le plus bas × x %)] ; note 0 dès x % au-dessus du prix le plus bas',
     },
     lbX: 'Écart donnant la note 0 (x, en % au-dessus du prix le plus bas)',
     lbTmoyMode: 'Formule annoncée pour la méthode Tmoyenne', tmGuide: 'Selon le Guide romand : montant estimé si moins de 5 offres', tmMean: 'Prix moyen, quel que soit le nombre d’offres',
-    lbEst: 'Montant estimé par l’adjudicateur (CHF, TTC)', hintEst: 'Utilisé seulement si moins de 5 offres et si la variante du Guide romand a été annoncée.',
-    lbWeight: 'Pondération du prix (%)', weightHint: w => `Autres critères : ${w} %. Points = note × pondération (maximum 500 points).`,
-    lbRound: 'Arrondi des notes du prix', rdNone: 'Pas d’arrondi', rd2: 'Deux décimales', rd1: 'Une décimale',
-    lgOffers: 'Offres', lbOtherMode: 'Autres critères saisis en', omNote: 'Note moyenne pondérée (0 à 5)', omPoints: 'Points déjà pondérés',
-    hintOffers: 'Montants TTC des offres recevables, après vérification arithmétique (Guide romand, annexe T2).',
-    offerN: n => `Offre ${n}`, remove: 'Supprimer', lbName: 'Soumissionnaire', lbPrice: 'Prix (CHF, TTC)', lbOtherNote: 'Note des autres critères', lbOtherPts: 'Points des autres critères',
-    addOffer: 'Ajouter une offre', example: 'Charger un exemple', exNames: ['Alpha SA', 'Bêta Sàrl', 'Gamma SA', 'Delta SA'],
-    rTitle: 'Offre la mieux classée', emptyTotal: 'Saisissez au moins deux offres avec un prix.', tie: 'Égalité : ',
-    rangeTxt: (t, m, l) => `${t} points sur ${m} – méthode ${l}`,
-    kPmin: 'Prix le plus bas', kPmean: 'Prix moyen', kN: 'Offres',
-    hRank: 'Classement', thRank: 'Rang', thName: 'Soumissionnaire', thPrice: 'Prix TTC', thGap: 'Écart', thNote: 'Note prix', thPP: 'Points prix', thOP: 'Points autres', thTot: 'Total',
-    hThresh: 'Seuils de bascule', introThresh: 'Prix auquel chaque offre changerait de position, les autres offres restant inchangées, ou note qu’elle devrait obtenir aux autres critères à prix inchangé.',
-    thThresh: 'Seuil de prix', thVar: 'Variation', thNeed: 'Autres critères nécessaires',
-    staysFirst: 'reste première jusqu’à', noLimit: 'sans limite jusqu’à dix fois le prix', becomesFirst: 'passe première à', impossible: 'impossible par le seul prix', needNote: (v, cur) => `${v} (actuellement ${cur})`, needImpossible: (v) => `impossible (${v} > 5)`,
-    hCompare: 'Comparaison des méthodes', introCompare: 'Notes du prix selon chaque méthode, mêmes offres et même pondération. Une autre méthode ne peut être appliquée que si elle a été annoncée.',
-    thMethod: 'Méthode', thFirst: 'Première', estNeeded: 'montant estimé requis',
-    hChart: 'Courbes de notation', axX: 'Écart par rapport au prix le plus bas', axY: 'Note',
-    hSummary: 'Résumé', copy: 'Copier', copied: 'Copié',
-    sumTitle: (l) => `Simulation de la notation du prix – méthode ${l}`,
-    sumFormula: f => `Formule : ${f}`,
-    sumWeight: (w, o) => `Pondération : prix ${w} %, autres critères ${o} %`,
-    sumMarket: (a, b, n) => `Prix le plus bas : CHF ${a} ; prix moyen : CHF ${b} ; ${n} offres`,
-    sumRow: (k, n, p, g, nt, pp, op, t) => `${k}. ${n} : CHF ${p} (+${g} %), note prix ${nt}, points prix ${pp}, autres critères ${op}, total ${t}`,
-    sumWinner: w => `Offre la mieux classée : ${w}.`,
-    sumStays: (n, p, v) => `${n} reste première jusqu’à un prix de CHF ${p} (+${v} %).`,
-    sumBecomes: (n, p, v, o) => `${n} passerait en tête à un prix de CHF ${p} (−${v} %)${o ? ' ou avec ' + o + ' aux autres critères' : ''}.`,
-    sumNoPrice: (n, o) => `${n} ne peut passer en tête par le seul prix${o ? ' ; il lui faudrait ' + o + ' aux autres critères' : ''}.`,
-    sumOtherNote: v => `une note de ${v}`, sumOtherPts: v => `${v} points`,
-    sumCompare: list => `Selon la méthode, l’offre la mieux classée change : ${list}.`,
-    sumSame: 'Toutes les méthodes calculables désignent la même offre en tête.',
-    sumEnd: 'Simulation indicative ; seule la méthode annoncée dans les documents d’appel d’offres fait foi.',
+    lbEst: 'Montant estimé par l’adjudicateur (CHF, TTC)', hintEst: 'Utilisé seulement avec moins de 5 prix prévus et la variante du Guide romand.',
+    lbCmp: 'Comparer avec les autres méthodes',
+    lgOffers: 'Prix prévus', hintOffers: 'Facultatif : prix TTC que vous anticipez, sans nom de soumissionnaire. Ils servent à visualiser l’effet de la méthode sur des écarts concrets.',
+    offerN: n => `Offre ${n}`, lbPrice: 'Prix (CHF, TTC)', addOffer: '+ Ajouter une offre', example: 'Exemple', clearOffers: 'Effacer les prix',
+    hlLabel: (m, w) => `Méthode ${m}, prix pondéré à ${w} %`, hlTotal: lost => `−${lost} points sur 100 pour une offre 10 % plus chère`,
+    hlRange: (need, o) => `Pour compenser, cette offre doit obtenir ${need} point de plus (sur 5) en moyenne sur les autres critères (${o} %).`,
+    hlNoData: 'Saisissez des prix prévus pour évaluer la méthode Tmoyenne.',
+    hChart: 'Points obtenus selon l’écart de prix', chartAria: 'Courbe des points de prix en fonction de l’écart par rapport à l’offre la moins chère',
+    axGap: 'Écart par rapport à l’offre la moins chère', axPts: 'Points de prix (sur 100)',
+    chartHint: 'La courbe montre les points de prix (sur 100) obtenus par une offre selon son écart avec l’offre la moins chère. Les points marquent les prix prévus.',
+    chartHintCmp: 'Courbe épaisse : méthode choisie ; courbes fines : autres méthodes. Les points marquent les prix prévus.',
+    hImpact: 'Impact d’un écart de prix', thGap: 'Écart', thNote: 'Note (sur 5)', thPts: 'Points (sur 100)', thLost: 'Points perdus', thNeeded: 'Avance nécessaire (sur 5)',
+    hintImpact: 'Points perdus : par rapport à l’offre la moins chère, qui obtient tous les points de prix. Avance nécessaire : différence de note moyenne pondérée (sur 5) que l’offre plus chère doit obtenir sur les autres critères pour revenir à égalité.',
+    tmoyNeedsPricesShort: 'La méthode Tmoyenne dépend des offres : saisissez des prix prévus.',
+    hCmp: 'Comparaison des méthodes : points perdus selon l’écart',
+    hOffers: 'Prix prévus avec la méthode choisie', thOffer: 'Offre', thPrice: 'Prix TTC',
+    hOffCmp: 'Prix prévus : points perdus selon la méthode',
     n: {
       weightRange: 'Pondération du prix hors de la fourchette admise en principe, de 20 % à 80 % (ATF 143 II 553 consid. 6.4).',
-      weightLow: 'Pour des prestations peu complexes, le Tribunal fédéral a jugé que le prix devait être pondéré à 60 % au moins (arrêt 2C_802/2021 du 24 novembre 2022).',
-      tmoyNoEst: 'Méthode Tmoyenne avec moins de 5 offres : le Guide romand remplace le prix moyen par le montant estimé par l’adjudicateur. Indiquez ce montant, ou choisissez la formule avec le prix moyen si c’est celle qui a été annoncée.',
-      tmoyEst: 'Moins de 5 offres : la notation utilise le montant estimé par l’adjudicateur. Cette variante n’est applicable que si elle a été annoncée dans les documents d’appel d’offres (ATA/1113/2024 du 24 septembre 2024).',
-      tmoyMeanFew: 'Moins de 5 offres avec la formule du prix moyen : le Guide romand déconseille cette formule, mais l’adjudicateur doit appliquer celle qu’il a annoncée (ATA/1113/2024 du 24 septembre 2024).',
-      tmoyOutlier: 'Méthode Tmoyenne avec une offre au moins deux fois plus chère que la moins chère : les offres très chères faussent la moyenne et rapprochent les notes (Guide romand, annexe T2).',
-      twoOffers: 'Deux offres seulement : vérifiez que la méthode ne dénature pas le critère du prix ; c’est le seul cas où une adaptation peut s’imposer (ATA/1113/2024).',
-      abnLow: d => `${esc(d.name)} est inférieure de ${pct(d.pct)} % à la moyenne des autres offres : au-delà de 30 %, l’adjudicateur doit demander des renseignements (art. 38 al. 3 AIMP 2019 ; Guide romand, annexe O).`,
-      zeroNote: d => `Note de prix nulle : ${d.map(esc).join(', ')}.`,
-      otherRange: 'Une note des autres critères sort de l’échelle de 0 à 5.',
-      tieTop: 'Plusieurs offres sont à égalité en tête.',
-      flat: d => `Pente faible : malgré un écart de prix de ${pct(d.gap)} %, l’écart de points de prix ne représente que ${pct(d.share)} % du poids du prix. La méthode ne doit pas réduire le poids effectif du prix (message LMP, FF 2017 1802).`,
+      weightSum: 'Les pondérations ne totalisent pas 100 %.',
+      tmoyNeedsPrices: 'La méthode Tmoyenne dépend du prix moyen des offres ; sans prix prévus, son effet ne peut pas être anticipé.',
+      tmoyEst: 'Moins de 5 prix : la notation utilise le montant estimé par l’adjudicateur. Cette variante n’est applicable que si elle a été annoncée dans les documents d’appel d’offres (ATA/1113/2024 du 24 septembre 2024).',
+      tmoyMeanFew: 'Moins de 5 prix avec la formule du prix moyen : le Guide romand déconseille cette formule, mais l’adjudicateur doit appliquer celle qu’il a annoncée (ATA/1113/2024).',
+      tmoyNoEst: 'Indiquez le montant estimé par l’adjudicateur pour évaluer la méthode Tmoyenne avec moins de 5 prix.',
+      linX: x => `Méthode linéaire : la note vaut 0 dès un écart de ${x} % au-dessus du prix le plus bas. La pente doit couvrir la fourchette de prix attendue (Message LMP, FF 2017 1695, p. 1802).`,
+      zeroNotes: n => `${n} prix prévu(s) obtiennent la note 0 : au-delà de ce seuil, la méthode ne différencie plus les offres. Envisagez une pente plus douce ou un écart x plus large.`,
+      rangeCover: z => `La note 0 est atteinte dès ${z} % d’écart, alors qu’un prix prévu dépasse ce seuil.`,
+      twoOffers: 'Deux prix seulement : vérifiez que la méthode ne dénature pas le critère du prix (ATA/1113/2024).',
+      announce: 'La méthode et la pondération doivent être annoncées dans les documents d’appel d’offres (art. 29 AIMP 2019 et LMP ; art. 4 RLMP-VD) ; les modifier après l’ouverture des offres est en principe interdit (ATA/1113/2024).',
     },
-    hPrinciples: 'Principes juridiques',
-    principles: [
-      'Le marché est adjugé à l’offre la plus avantageuse (art. 41 AIMP 2019 et LMP). Le prix et la qualité sont des critères obligatoires ; seules les prestations standardisées peuvent être adjugées sur la base du seul prix (art. 29 al. 1 et 4 AIMP 2019 et LMP).',
-      'Les critères d’adjudication et leur pondération sont indiqués dans l’appel d’offres ou les documents d’appel d’offres (art. 29 al. 3 AIMP 2019 et LMP). Le Guide romand recommande d’annoncer aussi la méthode de notation du prix ; dans le canton de Vaud, c’est obligatoire (art. 4 al. 1 let. a RLMP-VD).',
-      'L’adjudicateur doit appliquer la méthode annoncée. La modifier après l’ouverture des offres est en principe interdit, sauf motif objectif, par exemple lorsque la méthode initiale dénature le critère du prix (ATA/1113/2024 du 24 septembre 2024).',
-      'La pondération du prix doit en principe se situer entre 20 % et 80 % (ATF 143 II 553 consid. 6.4). Pour des prestations peu complexes, le Tribunal fédéral a retenu un minimum de 60 % (arrêt 2C_802/2021 du 24 novembre 2022).',
-      'La pente de la courbe de notation doit couvrir la fourchette de prix attendue ; une méthode qui réduit le poids effectif du prix est inadaptée (message LMP, FF 2017 1802).',
-      'Une offre inférieure de plus de 30 % à la moyenne des autres offres impose de demander des renseignements au soumissionnaire (art. 38 al. 3 AIMP 2019 ; Guide romand, annexe O). Elle peut être exclue si le prix n’est pas justifié (art. 44 al. 2 let. c AIMP 2019).',
-      'Selon le Guide romand, la méthode s’applique aux seules offres recevables et contrôlées, sur leurs montants TTC ; l’offre la moins chère reçoit la note 5, et les critères qualitatifs doivent être notés sur toute l’échelle de 0 à 5 (annexes O et T2).',
-      'Le juge ne revoit l’évaluation des offres que sous l’angle de l’abus ou de l’excès du pouvoir d’appréciation (ATF 130 I 241 consid. 6.1) ; un vice n’entraîne l’annulation que s’il a influé sur le résultat.',
+    hSummary: 'Résumé', hDoc: 'Texte pour les documents d’appel d’offres', copy: 'Copier', copied: 'Copié', print: 'Imprimer', reset: 'Réinitialiser',
+    sumHead: 'Notation du prix : choix de la méthode',
+    sumWeight: (w, o) => `Pondération : prix ${w} % ; autres critères : ${o}.`,
+    sumMethod: (m, f) => `Méthode ${m} : ${f}.`,
+    sumImpactHead: 'Effet d’un écart de prix par rapport à l’offre la moins chère :',
+    sumImpactRow: (g, note, lost, need) => `– ${g} : note ${note} sur 5, ${lost} points perdus sur 100, avance nécessaire sur les autres critères ${need} sur 5`,
+    sumOffersHead: 'Prix prévus :', sumOfferRow: (o, p, g, note, lost) => `– ${o} : CHF ${p} (${g}), note ${note}, ${lost} points perdus`,
+    sumEnd: 'Analyse indicative établie avec l’outil d’id est avocats ; à vérifier dans chaque cas.',
+    docText: (m, f, w, x, tm, guide) => `Le prix est pondéré à ${w} %. Il est noté selon ${guide ? `la méthode ${m} du Guide romand pour les marchés publics` : 'la formule suivante'} : ${f}.${x ? ` L’écart x est fixé à ${x} %.` : ''}${tm === 'guide' ? ' En présence de moins de cinq offres, le montant estimé par l’adjudicateur remplace l’écart entre le prix moyen et le prix le plus bas.' : tm === 'mean' ? ' La formule du prix moyen s’applique quel que soit le nombre d’offres.' : ''} Les notes sont attribuées sur les prix TTC des offres recevables, après vérification arithmétique.`,
+    hPrinciples: 'Principes juridiques', principles: [
+      'Le marché est adjugé à l’offre la plus avantageuse ; les critères et leur pondération doivent figurer dans les documents d’appel d’offres (art. 29 et 41 AIMP 2019 et LMP ; art. 4 RLMP-VD).',
+      'La pondération du prix se situe en principe entre 20 % et 80 % (ATF 143 II 553 consid. 6.4) ; pour des prestations peu complexes, le Tribunal fédéral a retenu un minimum de 60 % (2C_802/2021 du 24 novembre 2022).',
+      'La méthode de notation doit être choisie de sorte que la pente de la courbe couvre la fourchette de prix attendue ; une méthode qui attribue la note 0 à la plupart des offres ou qui ne différencie plus les prix dénature le critère (Message LMP, FF 2017 1695, p. 1802).',
+      'La méthode annoncée s’applique telle quelle ; la modifier après l’ouverture des offres est en principe interdit, sauf motif objectif (ATA/1113/2024 du 24 septembre 2024).',
+      'Le juge ne revoit l’évaluation des offres que sous l’angle de l’abus ou de l’excès du pouvoir d’appréciation (ATF 130 I 241 consid. 6.1).',
     ],
-    hDisclaimer: 'Avertissement',
-    disclaimer: [
-      'Cet outil est mis à disposition gratuitement par id est avocats Sàrl à titre d’aide au calcul. Il ne constitue pas un conseil juridique et son utilisation ne crée aucune relation de mandat avec l’étude.',
-      'L’outil est en phase de test (beta) et peut contenir des erreurs. Les textes et guides ont été consultés en octobre 2026 ; ils peuvent avoir été modifiés depuis.',
-      'Les résultats sont indicatifs. Ils dépendent des informations saisies et de la méthode choisie. Seules la méthode et la pondération annoncées dans les documents d’appel d’offres font foi ; l’utilisateur doit vérifier lui-même chaque calcul.',
+    hDisclaimer: 'Avertissement', disclaimer: [
+      'Cet outil est mis à disposition gratuitement par id est avocats Sàrl à titre d’aide à la décision. Il ne constitue pas un conseil juridique et son utilisation ne crée aucune relation de mandat avec l’étude.',
+      'L’outil est en phase de test (beta) et peut contenir des erreurs. Les formules reproduisent le Guide romand pour les marchés publics (annexe T2, version du 1er mai 2026) ; la pratique peut varier selon l’adjudicateur et le canton.',
+      'Le résultat dépend des données saisies. L’utilisateur doit vérifier lui-même la méthode, la pondération et leur annonce dans les documents d’appel d’offres.',
       'Dans toute la mesure autorisée, id est avocats Sàrl décline toute responsabilité pour les conséquences de l’utilisation de l’outil.',
-      'id est avocats ne collecte aucune donnée dans le cadre de l’utilisation de l’outil : les calculs sont effectués dans le navigateur et les montants saisis ne sont pas conservés. Seul le mode d’affichage choisi est mémorisé localement sur l’appareil. L’outil est hébergé sur le site GitHub, qui peut collecter certaines informations, notamment au moyen de cookies, conformément à sa propre déclaration relative à la protection des données.',
+      'id est avocats ne collecte aucune donnée dans le cadre de l’utilisation de l’outil : les calculs sont effectués dans le navigateur et aucune donnée n’est conservée. Seuls le mode d’affichage et la langue choisis sont mémorisés localement sur l’appareil. L’outil est hébergé sur le site GitHub, qui peut collecter certaines informations, notamment au moyen de cookies, conformément à sa propre déclaration relative à la protection des données.',
     ],
-    print: 'Imprimer', reset: 'Réinitialiser',
-    licence: '<b>Licence :</b> code sous licence <a href="https://www.gnu.org/licenses/agpl-3.0.html">GNU AGPL 3.0</a> ou version ultérieure ; tableaux et textes juridiques sous licence <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.fr">CC BY-NC 4.0</a> (attribution : id est avocats Sàrl).',
-    source: 'Code source :', band: 'Outil d’aide au calcul, à vérifier dans chaque cas',
+    licence: '<b>Licence :</b> code sous licence <a href="https://www.gnu.org/licenses/agpl-3.0.html">GNU AGPL 3.0</a> ou version ultérieure ; textes juridiques sous licence <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.fr">CC BY-NC 4.0</a> (attribution : id est avocats Sàrl).',
+    source: 'Code source :', band: 'Outil d’aide à la décision, à vérifier dans chaque cas',
   },
+  en: {
+    pageTitle: 'Public procurement – price scoring – id est avocats', langGroup: 'Language', themeGroup: 'Display', themeAuto: 'Auto', themeLight: 'Light', themeDark: 'Dark',
+    title: 'Public procurement – price scoring',
+    subtitle: 'When drafting the tender documents: what is the effect of a price difference under the chosen scoring method and weighting, and how much must a more expensive bid gain on the other criteria to compensate? Methods of the Swiss French-speaking cantons’ procurement guide (Guide romand: T1.5, T2, T3, T200, T300, Tmoyenne), proportional and linear.',
+    caution: '<b>Decision aid only.</b> The tool does not replace the contracting authority’s judgement or the review of the tender documents. See the disclaimer below the result.',
+    lgCriteria: 'Award criteria', lbWeight: 'Price weighting (%)', hintWeight: 'In principle between 20% and 80% (ATF 143 II 553); at least 60% for services of low complexity (Federal Supreme Court 2C_802/2021).',
+    lbOthers: 'Other criteria', lbCritName: 'Criterion', lbCritWeight: 'Weighting', phCrit: 'Criterion', addOther: '+ Add a criterion', remove: 'Remove',
+    defOthers: ['Technical quality', 'References and organisation'],
+    sumTxt: (w, o, tot) => `Price ${w}% + other criteria ${o}% = ${tot}%`,
+    lgMethod: 'Price scoring method', lbMethod: 'Method', optional: '(optional)',
+    mLabel: { T2: 'T2', T15: 'T1.5', T3: 'T3', T200: 'T200', T300: 'T300', Tmoy: 'Tmoyenne', T1: 'Proportional', Tlin: 'Linear' }, mTmoy: 'Tmoyenne (average price)', mT1: 'Proportional', mTlin: 'Configurable linear',
+    mDesc: {
+      T2: 'The most common Guide romand method: the score falls with the square of the price ratio. Medium slope, suitable for most contracts.',
+      T15: 'Gentler slope than T2: price weighs less, leaving more room for quality criteria.',
+      T3: 'Steep slope: price is highly discriminating; suited to standardised services where quality varies little.',
+      T200: 'Linear decrease to a score of 0 at twice the lowest price. Gentle slope.',
+      T300: 'Linear decrease to a score of 0 at three times the lowest price. Very gentle slope: price matters little.',
+      Tmoy: 'The score depends on the gap between the lowest price and the average price of the bids: it can only be anticipated with expected prices. With fewer than five bids, the Guide romand uses the contracting authority’s estimate.',
+      T1: 'Score proportional to the price ratio. Gentle slope, especially for large differences.',
+      Tlin: 'Linear decrease to a score of 0 at a difference of x% that you set. Lets you calibrate the slope to the expected price range.',
+    },
+    formula: {
+      T15: 'Score = 5 × (lowest price ÷ bid price)<sup>1.5</sup>',
+      T2: 'Score = 5 × (lowest price ÷ bid price)<sup>2</sup>',
+      T3: 'Score = 5 × (lowest price ÷ bid price)<sup>3</sup>',
+      T200: 'Score = 5 × (2 × lowest price − bid price) ÷ lowest price; score 0 from twice the lowest price',
+      T300: 'Score = 5 × (3 × lowest price − bid price) ÷ (2 × lowest price); score 0 from three times the lowest price',
+      Tmoy: 'Score = 5 − (bid price − lowest price) ÷ (average price − lowest price); under the Guide romand, with fewer than 5 bids: 5 − (bid price − lowest price) ÷ contracting authority’s estimate',
+      T1: 'Score = 5 × lowest price ÷ bid price',
+      Tlin: 'Score = 5 × [1 − (bid price − lowest price) ÷ (lowest price × x%)]; score 0 from x% above the lowest price',
+    },
+    lbX: 'Difference giving a score of 0 (x, in % above the lowest price)',
+    lbTmoyMode: 'Formula announced for the Tmoyenne method', tmGuide: 'Per the Guide romand: estimate if fewer than 5 bids', tmMean: 'Average price, whatever the number of bids',
+    lbEst: 'Contracting authority’s estimate (CHF, incl. VAT)', hintEst: 'Used only with fewer than 5 expected prices and the Guide romand variant.',
+    lbCmp: 'Compare with the other methods',
+    lgOffers: 'Expected prices', hintOffers: 'Optional: prices incl. VAT that you anticipate, without bidder names. They show the effect of the method on concrete differences.',
+    offerN: n => `Bid ${n}`, lbPrice: 'Price (CHF, incl. VAT)', addOffer: '+ Add a bid', example: 'Example', clearOffers: 'Clear prices',
+    hlLabel: (m, w) => `Method ${m}, price weighted at ${w}%`, hlTotal: lost => `−${lost} points out of 100 for a bid 10% more expensive`,
+    hlRange: (need, o) => `To compensate, that bid must score ${need} more (out of 5) on average on the other criteria (${o}%).`,
+    hlNoData: 'Enter expected prices to assess the Tmoyenne method.',
+    hChart: 'Points obtained by price difference', chartAria: 'Curve of price points as a function of the difference from the lowest bid',
+    axGap: 'Difference from the lowest bid', axPts: 'Price points (out of 100)',
+    chartHint: 'The curve shows the price points (out of 100) obtained by a bid according to its difference from the lowest bid. Dots mark the expected prices.',
+    chartHintCmp: 'Thick curve: chosen method; thin curves: other methods. Dots mark the expected prices.',
+    hImpact: 'Impact of a price difference', thGap: 'Difference', thNote: 'Score (out of 5)', thPts: 'Points (out of 100)', thLost: 'Points lost', thNeeded: 'Lead needed (out of 5)',
+    hintImpact: 'Points lost: compared with the lowest bid, which gets all the price points. Lead needed: difference in weighted average score (out of 5) that the more expensive bid must obtain on the other criteria to draw level.',
+    tmoyNeedsPricesShort: 'The Tmoyenne method depends on the bids: enter expected prices.',
+    hCmp: 'Method comparison: points lost by price difference',
+    hOffers: 'Expected prices with the chosen method', thOffer: 'Bid', thPrice: 'Price incl. VAT',
+    hOffCmp: 'Expected prices: points lost by method',
+    n: {
+      weightRange: 'Price weighting outside the range admitted in principle, 20% to 80% (ATF 143 II 553, consid. 6.4).',
+      weightSum: 'The weightings do not add up to 100%.',
+      tmoyNeedsPrices: 'The Tmoyenne method depends on the average bid price; without expected prices, its effect cannot be anticipated.',
+      tmoyEst: 'Fewer than 5 prices: the scoring uses the contracting authority’s estimate. This variant applies only if announced in the tender documents (Geneva Administrative Chamber, ATA/1113/2024 of 24 September 2024).',
+      tmoyMeanFew: 'Fewer than 5 prices with the average-price formula: the Guide romand advises against it, but the contracting authority must apply the formula it announced (ATA/1113/2024).',
+      tmoyNoEst: 'Enter the contracting authority’s estimate to assess the Tmoyenne method with fewer than 5 prices.',
+      linX: x => `Linear method: the score is 0 from a difference of ${x}% above the lowest price. The slope must cover the expected price range (Federal Council dispatch on the PPA, FF 2017 1695, p. 1802).`,
+      zeroNotes: n => `${n} expected price(s) score 0: beyond that threshold, the method no longer differentiates bids. Consider a gentler slope or a wider x.`,
+      rangeCover: z => `A score of 0 is reached from a ${z}% difference, while one expected price exceeds that threshold.`,
+      twoOffers: 'Only two prices: check that the method does not distort the price criterion (ATA/1113/2024).',
+      announce: 'The method and the weighting must be announced in the tender documents (Art. 29 IAPP 2019 and PPA; Art. 4 RLMP-VD); changing them after the bids are opened is in principle prohibited (ATA/1113/2024).',
+    },
+    hSummary: 'Summary', hDoc: 'Text for the tender documents', copy: 'Copy', copied: 'Copied', print: 'Print', reset: 'Reset',
+    sumHead: 'Price scoring: choice of method',
+    sumWeight: (w, o) => `Weighting: price ${w}%; other criteria: ${o}.`,
+    sumMethod: (m, f) => `Method ${m}: ${f}.`,
+    sumImpactHead: 'Effect of a price difference from the lowest bid:',
+    sumImpactRow: (g, note, lost, need) => `– ${g}: score ${note} out of 5, ${lost} points lost out of 100, lead needed on the other criteria ${need} out of 5`,
+    sumOffersHead: 'Expected prices:', sumOfferRow: (o, p, g, note, lost) => `– ${o}: CHF ${p} (${g}), score ${note}, ${lost} points lost`,
+    sumEnd: 'Indicative analysis prepared with the id est avocats tool; to be verified in each case.',
+    docText: (m, f, w, x, tm, guide) => `Price is weighted at ${w}%. It is scored using ${guide ? `method ${m} of the Guide romand for public procurement` : 'the following formula'}: ${f}.${x ? ` The difference x is set at ${x}%.` : ''}${tm === 'guide' ? ' Where fewer than five bids are received, the contracting authority’s estimate replaces the gap between the average and the lowest price.' : tm === 'mean' ? ' The average-price formula applies whatever the number of bids.' : ''} Scores are awarded on the prices incl. VAT of admissible bids, after arithmetical verification.`,
+    hPrinciples: 'Legal principles', principles: [
+      'The contract is awarded to the most advantageous bid; the criteria and their weighting must appear in the tender documents (Art. 29 and 41 IAPP 2019 and PPA; Art. 4 RLMP-VD).',
+      'The price weighting is in principle between 20% and 80% (ATF 143 II 553, consid. 6.4); for services of low complexity, the Federal Supreme Court held a minimum of 60% (2C_802/2021 of 24 November 2022).',
+      'The scoring method must be chosen so that the slope of the curve covers the expected price range; a method that gives most bids a score of 0 or no longer differentiates prices distorts the criterion (Federal Council dispatch on the PPA, FF 2017 1695, p. 1802).',
+      'The announced method applies as such; changing it after the bids are opened is in principle prohibited, save for an objective reason (ATA/1113/2024 of 24 September 2024).',
+      'Courts review the evaluation of bids only for abuse or excess of discretion (ATF 130 I 241, consid. 6.1).',
+    ],
+    hDisclaimer: 'Disclaimer', disclaimer: [
+      'This tool is provided free of charge by id est avocats Sàrl as a decision aid. It does not constitute legal advice and its use does not create any client relationship with the firm.',
+      'The tool is in a test phase (beta) and may contain errors. The formulas reproduce the Guide romand for public procurement (Annex T2, version of 1 May 2026); practice may vary by contracting authority and canton.',
+      'The result depends on the data entered. Users must check the method, the weighting and their announcement in the tender documents themselves.',
+      'To the fullest extent permitted by law, id est avocats Sàrl accepts no liability for the consequences of using the tool.',
+      'id est avocats does not collect any data through the use of the tool: calculations are made in the browser and no data is stored. Only the chosen display mode and language are stored locally on the device. The tool is hosted on GitHub, which may collect certain information, including by means of cookies, in accordance with its own privacy statement.',
+    ],
+    licence: '<b>Licence:</b> code under the <a href="https://www.gnu.org/licenses/agpl-3.0.html">GNU AGPL 3.0</a> or any later version; legal texts under the <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a> licence (attribution: id est avocats Sàrl).',
+    source: 'Source code:', band: 'Decision aid, to be verified in each case',
+  },
+
 };
 const T = () => STR[LANG];
-const pct = x => (Math.round(x * 1000) / 10).toLocaleString('fr-CH');
-const fmt = x => { const s = (Math.round(x * 100) / 100).toFixed(2).split('.'); return s[0].replace(/\B(?=(\d{3})+(?!\d))/g, "'") + (s[1] === '00' ? '' : '.' + s[1]); };
-const fmt0 = x => String(Math.round(x)).replace(/\B(?=(\d{3})+(?!\d))/g, "'");
-const f2 = x => Number.isFinite(x) ? x.toFixed(2) : '—';
-const f3 = x => Number.isFinite(x) ? x.toFixed(3) : '—';
+const N = Notation;
+const fmt = v => Number.isFinite(v) ? Math.round(v).toLocaleString(LANG === 'fr' ? 'de-CH' : 'en-GB') : '—';
+const f1 = v => Number.isFinite(v) ? (Math.round(v * 10) / 10).toLocaleString(LANG === 'fr' ? 'fr-CH' : 'en-GB', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : '—';
+const f2 = v => Number.isFinite(v) ? (Math.round(v * 100) / 100).toLocaleString(LANG === 'fr' ? 'fr-CH' : 'en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+const pct = g => { const v = Math.abs(g - Math.round(g)) < 0.05 ? String(Math.round(g)) : f1(g); return LANG === 'fr' ? `+${v} %` : `+${v}%`; };
+const num = s => { const x = parseFloat($(s).value); return Number.isFinite(x) ? x : 0; };
+const mLabel = m => T().mLabel[m] || m;
 
-// ---------- Offres ----------
-let seq = 0;
-function offerCard(data = {}) {
-  const el = document.createElement('div');
-  el.className = 'card'; el.dataset.id = ++seq;
-  el.innerHTML = `
-    <div class="card-head"><span class="of-title"></span><button type="button" class="del" data-i18n="remove"></button></div>
-    <div class="grid3">
-      <div><label data-i18n="lbName"></label><input type="text" class="o-name" value="${esc(data.name || '')}"></div>
-      <div><label data-i18n="lbPrice"></label><input type="number" class="o-price" min="0" step="0.01" inputmode="decimal" value="${data.price ?? ''}"></div>
-      <div><label class="o-otherLabel"></label><input type="number" class="o-other" min="0" step="0.01" inputmode="decimal" value="${data.other ?? ''}"></div>
-    </div>`;
-  el.querySelector('.del').onclick = () => { el.remove(); renumber(); update(); };
-  el.querySelectorAll('input').forEach(i => i.addEventListener('input', update));
-  $('#offers').appendChild(el);
-  translate(el); renumber();
-  return el;
-}
-function renumber() {
-  const t = T(), pts = $('#otherMode').value === 'points';
-  [...document.querySelectorAll('#offers .card')].forEach((c, i) => {
-    c.querySelector('.of-title').textContent = t.offerN(i + 1);
-    c.querySelector('.o-otherLabel').textContent = pts ? t.lbOtherPts : t.lbOtherNote;
-    c.querySelector('.o-other').max = pts ? '' : '5';
+// ---------- Critères et offres (lignes dynamiques) ----------
+let others = [], offers = [], oid = 0, cid = 0;
+function renderOthers() {
+  const t = T(), box = $('#others'); box.innerHTML = '';
+  others.forEach(o => {
+    const row = document.createElement('div'); row.className = 'crow';
+    row.innerHTML = `<input type="text" aria-label="${t.lbCritName}" placeholder="${t.phCrit}" value="${esc(o.name)}"><input type="number" min="0" max="100" step="1" inputmode="numeric" aria-label="${t.lbCritWeight}" placeholder="%" value="${o.weight === '' ? '' : o.weight}"><button type="button" class="del" aria-label="${t.remove}" title="${t.remove}">×</button>`;
+    const [nm, wt, del] = row.children;
+    nm.oninput = () => { o.name = nm.value; update(); }; wt.oninput = () => { o.weight = wt.value === '' ? '' : parseFloat(wt.value); update(); };
+    del.onclick = () => { others = others.filter(x => x !== o); renderOthers(); update(); };
+    box.appendChild(row);
   });
 }
-const num = v => { const x = parseFloat(String(v).replace(',', '.')); return Number.isFinite(x) ? x : null; };
-function readOffers() {
-  return [...document.querySelectorAll('#offers .card')].map((c, i) => ({
-    id: c.dataset.id, no: i + 1,
-    name: c.querySelector('.o-name').value.trim() || T().offerN(i + 1),
-    price: num(c.querySelector('.o-price').value),
-    other: num(c.querySelector('.o-other').value) || 0,
-  })).filter(o => o.price !== null && o.price > 0);
+function renderOffers() {
+  const t = T(), box = $('#offers'); box.innerHTML = '';
+  offers.forEach((o, i) => {
+    const row = document.createElement('div'); row.className = 'orow';
+    row.innerHTML = `<span class="olab">${t.offerN(i + 1)}</span><input type="number" min="0" step="1000" inputmode="numeric" aria-label="${t.offerN(i + 1)} – ${t.lbPrice}" placeholder="${t.lbPrice}" value="${o.price > 0 ? o.price : ''}"><button type="button" class="del" aria-label="${t.remove}" title="${t.remove}">×</button>`;
+    const [, inp, del] = row.children;
+    inp.oninput = () => { o.price = parseFloat(inp.value) || 0; update(); };
+    del.onclick = () => { offers = offers.filter(x => x !== o); renderOffers(); update(); };
+    box.appendChild(row);
+  });
 }
-
-// ---------- Traduction ----------
-function translate(root = document) {
+$('#addOther').onclick = () => { others.push({ id: ++cid, name: '', weight: '' }); renderOthers(); update(); $('#others .crow:last-child input').focus(); };
+$('#addOffer').onclick = () => { offers.push({ id: ++oid, price: 0 }); renderOffers(); update(); $('#offers .orow:last-child input').focus(); };
+$('#example').onclick = () => { offers = [{ id: ++oid, price: 1000000 }, { id: ++oid, price: 1080000 }, { id: ++oid, price: 1150000 }, { id: ++oid, price: 1300000 }]; $('#est').value = 1200000; renderOffers(); update(); };
+$('#clearOffers').onclick = () => { offers = [{ id: ++oid, price: 0 }, { id: ++oid, price: 0 }, { id: ++oid, price: 0 }]; renderOffers(); update(); };
+function defaults() {
   const t = T();
-  root.querySelectorAll('[data-i18n]').forEach(e => { const v = t[e.dataset.i18n]; if (typeof v === 'string') e.textContent = v; });
-  root.querySelectorAll('[data-i18n-html]').forEach(e => { e.innerHTML = t[e.dataset.i18nHtml]; });
-  root.querySelectorAll('[data-i18n-aria]').forEach(e => { e.setAttribute('aria-label', t[e.dataset.i18nAria]); });
-}
-function applyLang() {
-  const t = T();
-  document.documentElement.lang = LANG;
-  document.title = t.pageTitle;
-  translate();
-  $('#principles').innerHTML = t.principles.map(p => `<li>${p}</li>`).join('');
-  $('#disclaimerText').innerHTML = t.disclaimer.map(p => `<p>${p}</p>`).join('');
-  renumber(); setSource(); update();
+  others = [{ id: ++cid, name: t.defOthers[0], weight: 40 }, { id: ++cid, name: t.defOthers[1], weight: 20 }];
+  offers = [{ id: ++oid, price: 0 }, { id: ++oid, price: 0 }, { id: ++oid, price: 0 }];
+  $('#weight').value = 40; $('#method').value = 'T2'; $('#x').value = 50; $('#tmoyMode').value = 'guide'; $('#est').value = ''; $('#cmp').checked = true;
+  renderOthers(); renderOffers();
 }
 
 // ---------- Graphique ----------
-const COLORS = { T15: '#069297', T2: '#F7A823', T3: '#9E0F47', T200: '#5A7D9A', T300: '#8C8C93', Tmoy: '#2E8B57', T1: '#B5651D', Tlin: '#6A4C93' };
-function drawChart(cfg, ev) {
-  const t = T(), W = 640, H = 300, L = 44, R = 14, TOP = 12, B = 40;
-  const gapMax = Math.max(...ev.rows.map(r => r.gap));
-  const xMax = Math.min(3, Math.max(0.5, Math.ceil(gapMax * 1.25 / 0.25) * 0.25));
-  const X = g => L + (W - L - R) * g / xMax, Y = n => TOP + (H - TOP - B) * (1 - n / 5);
-  let s = '';
-  for (let n = 0; n <= 5; n++) s += `<line class="grid" x1="${L}" x2="${W - R}" y1="${Y(n)}" y2="${Y(n)}"/><text x="${L - 8}" y="${Y(n) + 4}" text-anchor="end">${n}</text>`;
-  const step = xMax <= 1 ? 0.1 : xMax <= 2 ? 0.25 : 0.5;
-  for (let g = 0; g <= xMax + 1e-9; g += step) s += `<line class="grid" x1="${X(g)}" x2="${X(g)}" y1="${TOP}" y2="${H - B}"/><text x="${X(g)}" y="${H - B + 16}" text-anchor="middle">+${Math.round(g * 100)} %</text>`;
-  s += `<line class="axis" x1="${L}" x2="${W - R}" y1="${H - B}" y2="${H - B}"/><line class="axis" x1="${L}" x2="${L}" y1="${TOP}" y2="${H - B}"/>`;
-  s += `<text x="${(L + W - R) / 2}" y="${H - 6}" text-anchor="middle">${t.axX}</text>`;
-  const pts = m => { const a = []; for (let k = 0; k <= 120; k++) { const g = xMax * k / 120, v = N.curve(cfg, m, g, ev); if (Number.isFinite(v)) a.push(`${X(g).toFixed(1)},${Y(v).toFixed(1)}`); } return a.join(' '); };
-  const legend = [];
-  N.METHODS.forEach(m => {
-    if (m === cfg.method) return;
-    const p = pts(m); if (!p) return;
-    s += `<polyline points="${p}" fill="none" stroke="${COLORS[m]}" stroke-width="1.4" opacity=".75"/>`;
-    legend.push(`<span><i style="background:${COLORS[m]}"></i>${t.short[m]}${m === 'Tlin' ? ' ' + cfg.x + ' %' : ''}</span>`);
-  });
-  const pm = pts(cfg.method);
-  if (pm) s += `<polyline points="${pm}" fill="none" stroke="var(--rose)" stroke-width="3.2"/>`;
-  [...ev.rows].sort((p, q) => p.gap - q.gap).forEach((r, k) => { if (Number.isFinite(r.note) && r.gap <= xMax) s += `<circle cx="${X(r.gap)}" cy="${Y(r.note)}" r="5" fill="var(--panel)" stroke="var(--rose)" stroke-width="2.4"><title>${esc(r.name)} : ${f2(r.note)}</title></circle><text x="${X(r.gap) + 8}" y="${Y(r.note) + (k % 2 ? 18 : -9)}" style="fill:var(--ink)">${esc(r.name.length > 14 ? r.name.slice(0, 13) + '…' : r.name)}</text>`; });
-  $('#chart').innerHTML = s;
-  $('#chart').setAttribute('aria-label', t.hChart);
-  $('#legend').innerHTML = `<span><i style="background:var(--rose);height:4px"></i><b>${t.short[cfg.method]}${cfg.method === 'Tlin' ? ' ' + cfg.x + ' %' : ''}</b></span>` + legend.join('');
+function chart(cfg, show) {
+  const t = T(), W = 680, H = 320, L = 46, R = 70, Tp = 14, B = 34, w = cfg.weight;
+  const gmax = Math.max(50, Math.min(200, Math.ceil(Math.max(0, ...(offersGaps(cfg) || [0])) / 10) * 10 + 10));
+  const sx = g => L + g / gmax * (W - L - R), sy = p => Tp + (1 - (w > 0 ? p / w : 0)) * (H - Tp - B);
+  let s = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${t.chartAria}">`;
+  // grille
+  const ysteps = 5;
+  for (let i = 0; i <= ysteps; i++) { const p = w * i / ysteps, y = sy(p); s += `<line class="grid" x1="${L}" x2="${W - R}" y1="${y}" y2="${y}"/><text x="${L - 6}" y="${y + 4}" text-anchor="end">${f1(p).replace('.0', '')}</text>`; }
+  const xstep = gmax <= 60 ? 10 : gmax <= 120 ? 20 : 50;
+  for (let g = 0; g <= gmax; g += xstep) { const x = sx(g); s += `<line class="grid" x1="${x}" x2="${x}" y1="${Tp}" y2="${H - B}"/><text x="${x}" y="${H - B + 14}" text-anchor="middle">+${g} %</text>`; }
+  s += `<line class="ax" x1="${L}" x2="${W - R}" y1="${H - B}" y2="${H - B}"/><line class="ax" x1="${L}" x2="${L}" y1="${Tp}" y2="${H - B}"/>`;
+  s += `<text x="${(L + W - R) / 2}" y="${H - 4}" text-anchor="middle">${t.axGap}</text><text transform="translate(12 ${(Tp + H - B) / 2}) rotate(-90)" text-anchor="middle">${t.axPts}</text>`;
+  const methods = show ? N.METHODS.filter(m => m !== cfg.method && !(m === 'Tmoy' && !offers.some(o => o.price > 0))) : [];
+  const path = m => { const pts = N.curve(cfg, m, gmax, gmax / 100).filter(p => Number.isFinite(p.pts)); return pts.length ? 'M' + pts.map(p => `${sx(p.g).toFixed(1)} ${sy(p.pts).toFixed(1)}`).join(' L') : ''; };
+  const endLabel = (m, cls) => { const pts = N.curve(cfg, m, gmax, gmax / 100).filter(p => Number.isFinite(p.pts)); if (!pts.length) return ''; const e = pts[pts.length - 1]; return `<text class="lbl ${cls}" x="${W - R + 4}" y="${sy(e.pts) + 4}">${esc(mLabel(m))}</text>`; };
+  methods.forEach(m => { s += `<path class="oth" d="${path(m)}"/>` + endLabel(m, ''); });
+  s += `<path class="sel" d="${path(cfg.method)}"/>` + endLabel(cfg.method, 'sel');
+  const ev = N.evaluate(cfg);
+  if (ev && ev.ok) ev.rows.forEach((r, i) => { if (r.gap <= gmax) s += `<circle class="dot" cx="${sx(r.gap)}" cy="${sy(r.pts)}" r="4.5"/><text class="dotl" x="${sx(r.gap) + 7}" y="${sy(r.pts) - 7}">${t.offerN(i + 1)}</text>`; });
+  s += '</svg>';
+  return s;
 }
+const offersGaps = cfg => { const ev = N.evaluate(cfg); return ev ? ev.rows.map(r => r.gap) : null; };
 
 // ---------- Calcul et affichage ----------
+function cfgOf() {
+  return { method: $('#method').value, weight: num('#weight'), x: num('#x'), tmoyMode: $('#tmoyMode').value, est: num('#est'), others: others.map(o => ({ name: o.name, weight: o.weight === '' ? 0 : o.weight })), offers: offers.map(o => ({ id: o.id, price: o.price })) };
+}
 function update() {
+  const t = T(), cfg = cfgOf(), m = cfg.method, w = cfg.weight, cmp = $('#cmp').checked;
+  $('#xBox').hidden = m !== 'Tlin'; $('#tmoyBox').hidden = m !== 'Tmoy';
+  $('#mDesc').textContent = t.mDesc[m]; $('#formula').innerHTML = t.formula[m];
+  const sumO = cfg.others.reduce((s, o) => s + o.weight, 0), tot = sumO + w;
+  $('#sumTxt').textContent = t.sumTxt(fmt(w), fmt(sumO), fmt(tot)); $('#sumTxt').className = 'sum' + (Math.abs(tot - 100) > 0.01 ? ' bad' : '');
+  // alertes
+  const alerts = N.checks(cfg).map(a => `<div class="alert ${a.lvl}">${typeof t.n[a.k] === 'function' ? t.n[a.k](a.data) : t.n[a.k]}</div>`);
+  $('#rAlerts').innerHTML = alerts.join('');
+  // bandeau : écart de 10 %
+  const imp = N.impact(cfg);
+  $('#hlLabel').textContent = t.hlLabel(mLabel(m), fmt(w));
+  if (imp && Number.isFinite(imp[1].pts)) { $('#hlTotal').textContent = t.hlTotal(f1(imp[1].lost)); $('#hlRange').textContent = t.hlRange(f2(imp[1].needed), fmt(100 - w)); }
+  else { $('#hlTotal').textContent = '—'; $('#hlRange').textContent = t.hlNoData; }
+  // graphique
+  $('#chartWrap').innerHTML = chart(cfg, cmp); $('#chartHint').textContent = cmp ? t.chartHintCmp : t.chartHint;
+  // tableau d'impact
+  if (imp) $('#impact').innerHTML = `<thead><tr><th>${t.thGap}</th><th class="num">${t.thNote}</th><th class="num">${t.thPts}</th><th class="num">${t.thLost}</th><th class="num">${t.thNeeded}</th></tr></thead><tbody>` + imp.map(r => `<tr><td>${pct(r.gap)}</td><td class="num">${f2(r.note)}</td><td class="num">${f1(r.pts)}</td><td class="num">${f1(r.lost)}</td><td class="num">${Number.isFinite(r.needed) ? f2(r.needed) : '—'}</td></tr>`).join('') + '</tbody>';
+  else $('#impact').innerHTML = `<tbody><tr><td>${t.tmoyNeedsPricesShort}</td></tr></tbody>`;
+  // comparaison des méthodes (écarts usuels)
+  $('#cmpOut').hidden = !cmp;
+  if (cmp) {
+    const ms = N.METHODS.filter(x => x !== 'Tmoy' || offers.some(o => o.price > 0));
+    $('#cmpTable').innerHTML = `<thead><tr><th>${t.thGap}</th>${ms.map(x => `<th class="num${x === m ? ' sel' : ''}">${esc(mLabel(x))}</th>`).join('')}</tr></thead><tbody>` + N.GAPS.map(g => `<tr><td>${pct(g)}</td>${ms.map(x => { const r = N.impact(cfg, x); const v = r ? r.find(z => z.gap === g).lost : NaN; return `<td class="num"${x === m ? ' style="font-weight:700"' : ''}>${f1(v)}</td>`; }).join('')}</tr>`).join('') + `</tbody>`;
+  }
+  // offres prévues
+  const ev = N.evaluate(cfg);
+  $('#offOut').hidden = !(ev && ev.n >= 1);
+  if (ev && ev.n >= 1) {
+    $('#offTable').innerHTML = `<thead><tr><th>${t.thOffer}</th><th class="num">${t.thPrice}</th><th class="num">${t.thGap}</th><th class="num">${t.thNote}</th><th class="num">${t.thPts}</th><th class="num">${t.thLost}</th><th class="num">${t.thNeeded}</th></tr></thead><tbody>` + ev.rows.map((r, i) => `<tr><td>${t.offerN(i + 1)}</td><td class="num">${fmt(r.price)}</td><td class="num">${pct(r.gap)}</td><td class="num">${f2(r.note)}</td><td class="num">${f1(r.pts)}</td><td class="num">${f1(r.lost)}</td><td class="num">${Number.isFinite(r.needed) ? f2(r.needed) : '—'}</td></tr>`).join('') + '</tbody>';
+    $('#offCmpOut').hidden = !cmp;
+    if (cmp) $('#offCmp').innerHTML = `<thead><tr><th>${t.thOffer}</th>${N.METHODS.map(x => `<th class="num">${esc(mLabel(x))}</th>`).join('')}</tr></thead><tbody>` + ev.rows.map((r, i) => `<tr><td>${t.offerN(i + 1)} (${pct(r.gap)})</td>${N.METHODS.map(x => { const e2 = N.evaluate(cfg, x); const v = e2 ? e2.rows[i].lost : NaN; return `<td class="num"${x === m ? ' style="font-weight:700"' : ''}>${f1(v)}</td>`; }).join('')}</tr>`).join('') + '</tbody>';
+  }
+  // textes
+  const plain = s => s.replace(/<sup>([^<]*)<\/sup>/g, '^$1').replace(/<[^>]+>/g, '');
+  const L = [t.sumHead, '', t.sumWeight(fmt(w), cfg.others.map(o => `${o.name || t.phCrit} ${fmt(o.weight)} %`).join(', ')), t.sumMethod(mLabel(m), plain(t.formula[m])), ''];
+  if (imp) { L.push(t.sumImpactHead); imp.forEach(r => L.push(t.sumImpactRow(pct(r.gap), f2(r.note), f1(r.lost), Number.isFinite(r.needed) ? f2(r.needed) : '—'))); }
+  if (ev && ev.n >= 1 && ev.ok) { L.push('', t.sumOffersHead); ev.rows.forEach((r, i) => L.push(t.sumOfferRow(t.offerN(i + 1), fmt(r.price), pct(r.gap), f2(r.note), f1(r.lost)))); }
+  L.push('', t.sumEnd);
+  $('#txtSum').value = L.join('\n');
+  $('#txtDoc').value = t.docText(mLabel(m), plain(t.formula[m]), fmt(w), m === 'Tlin' ? Math.max(1, cfg.x) : null, m === 'Tmoy' ? cfg.tmoyMode : null, !['T1', 'Tlin'].includes(m));
+}
+
+// ---------- Divers ----------
+const copy = (btn, ta) => async () => { try { await navigator.clipboard.writeText($(ta).value); } catch (e) { $(ta).select(); try { document.execCommand('copy'); } catch (_) {} } $(btn).textContent = T().copied; setTimeout(() => { $(btn).textContent = T().copy; }, 1500); };
+$('#copySum').onclick = copy('#copySum', '#txtSum'); $('#copyDoc').onclick = copy('#copyDoc', '#txtDoc');
+$('#print').onclick = () => window.print();
+$('#reset').onclick = () => { defaults(); update(); };
+['#weight', '#method', '#x', '#tmoyMode', '#est', '#cmp'].forEach(s => { $(s).addEventListener('input', update); $(s).addEventListener('change', update); });
+function translate() {
   const t = T();
-  const method = $('#method').value;
-  $('#formula').innerHTML = t.formula[method];
-  $('#tlinBox').hidden = method !== 'Tlin';
-  $('#tmoyBox').hidden = method !== 'Tmoy';
-  const weight = Math.max(0, Math.min(100, num($('#weight').value) ?? 0));
-  $('#weightHint').textContent = t.weightHint(fmt0(100 - weight));
-  const cfg = { method, weight, otherMode: $('#otherMode').value, est: num($('#est').value) || 0, x: Math.max(1, num($('#x').value) || 100), tmoyMode: $('#tmoyMode').value, round: $('#round').value, offers: readOffers() };
-  const ev = cfg.offers.length >= 2 ? N.evaluate(cfg) : null;
-  if (!ev) {
-    $('#rTotal').className = 'total empty'; $('#rTotal').textContent = t.emptyTotal;
-    $('#rRange').textContent = ''; $('#rKpis').innerHTML = ''; $('#rAlerts').innerHTML = ''; $('#rDetails').hidden = true;
-    return;
-  }
-  const label = t.short[method] + (method === 'Tlin' ? ' ' + cfg.x + ' %' : '');
-  const alerts = N.checks(cfg, ev).map(a => ({ lvl: a.lvl, html: typeof t.n[a.k] === 'function' ? t.n[a.k](a.data) : t.n[a.k] }));
-  $('#rAlerts').innerHTML = alerts.map(x => `<div class="alert ${x.lvl}">${x.html}</div>`).join('');
-  $('#rKpis').innerHTML = `<span class="kpi">${t.kPmin}<b>CHF ${fmt(ev.pmin)}</b></span><span class="kpi">${t.kPmean}<b>CHF ${fmt(ev.pmean)}</b></span><span class="kpi">${t.kN}<b>${ev.n}</b></span>`;
-  if (!ev.ok) {
-    $('#rTotal').className = 'total empty'; $('#rTotal').textContent = '—'; $('#rRange').textContent = ''; $('#rDetails').hidden = true;
-    return;
-  }
-  const winners = ev.rows.filter(r => r.rank === 1);
-  $('#rTotal').className = 'total';
-  $('#rTotal').textContent = (winners.length > 1 ? t.tie : '') + winners.map(w => w.name).join(', ');
-  $('#rRange').textContent = t.rangeTxt(f2(winners[0].total), 500, label);
-
-  // Classement
-  const sorted = [...ev.rows].sort((a, b) => a.rank - b.rank || a.price - b.price);
-  $('#tRank').innerHTML = `<thead><tr><th>${t.thRank}</th><th class="l">${t.thName}</th><th>${t.thPrice}</th><th>${t.thGap}</th><th>${t.thNote}</th><th>${t.thPP}</th><th>${t.thOP}</th><th>${t.thTot}</th></tr></thead><tbody>`
-    + sorted.map(r => `<tr class="${r.rank === 1 ? 'win' : ''}"><td>${r.rank}</td><td class="l">${esc(r.name)}</td><td>${fmt(r.price)}</td><td>+${pct(r.gap)} %</td><td>${f3(r.note)}</td><td>${f2(r.pricePts)}</td><td>${f2(r.otherPts)}</td><td>${f2(r.total)}</td></tr>`).join('') + '</tbody>';
-
-  // Seuils
-  const th = N.thresholds(cfg) || [];
-  const pts = cfg.otherMode === 'points';
-  const thRows = th.map((x, i) => {
-    const r = ev.rows[i];
-    if (x.rank === 1) {
-      const p = x.maxPrice === Infinity ? t.noLimit : `${t.staysFirst} CHF ${fmt(x.maxPrice)}`;
-      const v = x.maxPrice === Infinity ? '—' : `+${pct(x.maxPrice / r.price - 1)} %`;
-      return { r, html: `<td class="l">${esc(r.name)}</td><td>${fmt(r.price)}</td><td class="l">${p}</td><td>${v}</td><td>—</td>`, x };
-    }
-    const p = x.needPrice === null ? t.impossible : `${t.becomesFirst} CHF ${fmt(x.needPrice)}`;
-    const v = x.needPrice === null ? '—' : `−${pct(1 - x.needPrice / r.price)} %`;
-    const need = pts ? t.needNote(f2(x.needOther), f2(r.other)) : (x.needOther > 5 ? t.needImpossible(f2(x.needOther)) : t.needNote(f2(x.needOther), f2(r.other)));
-    return { r, html: `<td class="l">${esc(r.name)}</td><td>${fmt(r.price)}</td><td class="l">${p}</td><td>${v}</td><td class="l">${need}</td>`, x };
-  }).sort((a, b) => a.r.rank - b.r.rank);
-  $('#tThresh').innerHTML = `<thead><tr><th class="l">${t.thName}</th><th>${t.thPrice}</th><th class="l">${t.thThresh}</th><th>${t.thVar}</th><th class="l">${t.thNeed}</th></tr></thead><tbody>` + thRows.map(z => `<tr>${z.html}</tr>`).join('') + '</tbody>';
-
-  // Comparaison
-  const comp = N.compareAll(cfg);
-  const names = ev.rows.map(r => r.name);
-  const refWin = winners.map(w => w.name).join(', ');
-  $('#tCompare').innerHTML = `<thead><tr><th class="l">${t.thMethod}</th>${names.map(n => `<th>${esc(n)}</th>`).join('')}<th class="l">${t.thFirst}</th></tr></thead><tbody>`
-    + comp.map(c => {
-      const lab = t.short[c.method] + (c.method === 'Tlin' ? ' ' + cfg.x + ' %' : '');
-      if (!c.ok) return `<tr class="${c.method === method ? 'hl' : ''}"><td class="l">${lab}</td>${names.map(() => '<td>—</td>').join('')}<td class="l">${t.estNeeded}</td></tr>`;
-      const w = c.winners.join(', ');
-      return `<tr class="${c.method === method ? 'hl' : ''}"><td class="l">${lab}</td>${c.rows.map(r => `<td>${f2(r.note)}</td>`).join('')}<td class="l ${w !== refWin ? 'diff' : ''}">${esc(w)}</td></tr>`;
-    }).join('') + '</tbody>';
-
-  drawChart(cfg, ev);
-
-  // Résumé
-  const plain = h => h.replace(/<sup>([^<]*)<\/sup>/g, '^$1').replace(/<[^>]+>/g, '');
-  const lines = [t.sumTitle(label), t.sumFormula(plain(t.formula[method])), t.sumWeight(fmt0(weight), fmt0(100 - weight)), t.sumMarket(fmt(ev.pmin), fmt(ev.pmean), ev.n), ''];
-  sorted.forEach(r => lines.push(t.sumRow(r.rank, r.name, fmt(r.price), pct(r.gap), f3(r.note), f2(r.pricePts), f2(r.otherPts), f2(r.total))));
-  lines.push('', t.sumWinner(refWin));
-  thRows.forEach(z => {
-    const x = z.x, r = z.r;
-    if (x.rank === 1) { if (x.maxPrice !== Infinity) lines.push(t.sumStays(r.name, fmt(x.maxPrice), pct(x.maxPrice / r.price - 1))); return; }
-    const o = pts ? t.sumOtherPts(f2(x.needOther)) : (x.needOther <= 5 ? t.sumOtherNote(f2(x.needOther)) : '');
-    lines.push(x.needPrice === null ? t.sumNoPrice(r.name, o) : t.sumBecomes(r.name, fmt(x.needPrice), pct(1 - x.needPrice / r.price), o));
-  });
-  const diffs = comp.filter(c => c.ok && c.winners.join(', ') !== refWin).map(c => `${t.short[c.method]}${c.method === 'Tlin' ? ' ' + cfg.x + ' %' : ''} : ${c.winners.join(', ')}`);
-  lines.push(diffs.length ? t.sumCompare(diffs.join(' ; ')) : t.sumSame, '', t.sumEnd);
-  $('#txtSum').value = lines.join('\n');
-  $('#txtSum').rows = Math.min(24, lines.length + 2);
-  $('#rDetails').hidden = false;
+  document.querySelectorAll('[data-i18n]').forEach(e => { const v = t[e.dataset.i18n]; if (typeof v === 'string') e.textContent = v; });
+  document.querySelectorAll('[data-i18n-html]').forEach(e => { e.innerHTML = t[e.dataset.i18nHtml]; });
+  document.querySelectorAll('[data-i18n-aria]').forEach(e => { e.setAttribute('aria-label', t[e.dataset.i18nAria]); });
+  $('#principles').innerHTML = t.principles.map(p => `<li>${p}</li>`).join('');
+  $('#disclaimerText').innerHTML = t.disclaimer.map(p => `<p>${esc(p)}</p>`).join('');
 }
-
-// ---------- Événements ----------
-['#method', '#x', '#tmoyMode', '#est', '#weight', '#round'].forEach(s => { $(s).addEventListener('input', update); $(s).addEventListener('change', update); });
-$('#otherMode').addEventListener('change', () => { renumber(); update(); });
-$('#addOffer').onclick = () => { offerCard(); update(); };
-$('#example').onclick = () => {
-  const n = T().exNames;
-  $('#offers').innerHTML = '';
-  $('#otherMode').value = 'note'; $('#method').value = 'T2'; $('#weight').value = 40;
-  [[n[0], 1080000, 3.2], [n[1], 1250000, 4.4], [n[2], 1310000, 4.8], [n[3], 1620000, 4.5]].forEach(([name, price, other]) => offerCard({ name, price, other }));
-  update();
-};
-document.querySelectorAll('[data-copy]').forEach(b => b.addEventListener('click', async () => {
-  const ta = document.getElementById(b.dataset.copy);
-  try { await navigator.clipboard.writeText(ta.value); } catch (e) { ta.select(); try { document.execCommand('copy'); } catch (_) {} }
-  b.textContent = T().copied; setTimeout(() => { b.textContent = T().copy; }, 1500);
-}));
-$('#print').addEventListener('click', () => window.print());
-$('#reset').addEventListener('click', () => { $('#method').value = 'T2'; $('#x').value = 50; $('#tmoyMode').value = 'guide'; $('#est').value = ''; $('#weight').value = 40; $('#round').value = 'none'; $('#otherMode').value = 'note'; $('#offers').innerHTML = ''; offerCard(); offerCard(); offerCard(); update(); });
-
-function applyTheme(th) {
-  if (th === 'light' || th === 'dark') document.documentElement.setAttribute('data-theme', th); else document.documentElement.removeAttribute('data-theme');
-  document.querySelectorAll('[data-theme-set]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeSet === (th || 'auto'))));
+function applyLang(first) {
+  document.documentElement.lang = LANG; document.title = T().pageTitle;
+  document.querySelectorAll('[data-lang-set]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.langSet === LANG)));
+  translate();
+  if (first) defaults(); else { others.forEach((o, i) => { if (STR.fr.defOthers.includes(o.name) || STR.en.defOthers.includes(o.name)) o.name = T().defOthers[Math.max(0, STR.fr.defOthers.indexOf(o.name), STR.en.defOthers.indexOf(o.name))] || o.name; }); renderOthers(); renderOffers(); }
+  setSource(); update();
 }
-document.querySelectorAll('[data-theme-set]').forEach(b => b.addEventListener('click', () => { const th = b.dataset.themeSet; store.set('theme', th); applyTheme(th); }));
+document.querySelectorAll('[data-lang-set]').forEach(b => b.addEventListener('click', () => { LANG = b.dataset.langSet; store.set('lang', LANG); applyLang(false); }));
+function applyTheme(th) { if (th === 'light' || th === 'dark') document.documentElement.setAttribute('data-theme', th); else document.documentElement.removeAttribute('data-theme'); document.querySelectorAll('[data-theme-set]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.themeSet === (th || 'auto')))); }
+document.querySelectorAll('[data-theme-set]').forEach(b => b.addEventListener('click', () => { store.set('theme', b.dataset.themeSet); applyTheme(b.dataset.themeSet); }));
 applyTheme(store.get('theme', 'auto'));
-
-// Lien vers le code source (art. 13 AGPL), lorsque l’outil est servi par GitHub Pages
-function setSource() {
-  const h = location.hostname;
-  if (/\.github\.io$/.test(h)) {
-    const user = h.split('.')[0], repo = location.pathname.split('/').filter(Boolean)[0];
-    const url = `https://github.com/${user}${repo ? '/' + repo : ''}`;
-    $('#srcLink').innerHTML = `${T().source} <a href="${url}">${url.replace('https://', '')}</a>`;
-  } else $('#srcLink').hidden = true;
-}
-
-// ---------- Démarrage ----------
-offerCard(); offerCard(); offerCard();
-applyLang();
+function setSource() { const h = location.hostname; if (/\.github\.io$/.test(h)) { const user = h.split('.')[0], repo = location.pathname.split('/').filter(Boolean)[0]; const url = `https://github.com/${user}${repo ? '/' + repo : ''}`; $('#srcLink').innerHTML = `${T().source} <a href="${url}">${url.replace('https://', '')}</a>`; } else $('#srcLink').hidden = true; }
+const qs = new URLSearchParams(location.search); if (qs.get('lang') === 'en' || qs.get('lang') === 'fr') { LANG = qs.get('lang'); store.set('lang', LANG); }
+applyLang(true);
 })();
 </script>
 </body>

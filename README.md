@@ -1,39 +1,55 @@
-# Marchés publics – notation du prix – id est avocats
+# Marchés publics – notation du prix
 
-Outil en ligne de simulation de la notation du prix et du classement des offres en marchés publics, développé par id est avocats Sàrl.
+Outil en ligne pour choisir la méthode de notation du prix au moment de rédiger les documents d’appel d’offres : effet d’un écart de prix selon la méthode et la pondération, avance nécessaire sur les autres critères pour compenser, avec ou sans prix prévus.
 
-> **Aide au calcul uniquement.** Seules la méthode et la pondération annoncées dans les documents d’appel d’offres font foi. Voir [AVERTISSEMENT.md](AVERTISSEMENT.md).
-
-Version 1.0 (beta), octobre 2026. Historique : [CHANGELOG.md](CHANGELOG.md).
+Outil développé par id est avocats Sàrl, Lausanne. Version 2.0 (beta), octobre 2026. Historique : [CHANGELOG.md](CHANGELOG.md).
 
 ## Ce que fait l’outil
 
-- **Méthodes de notation** : les six méthodes du Guide romand pour les marchés publics (T1,5, T2, T3, T200, T300 et Tmoyenne, annexe T2), la méthode proportionnelle et une méthode linéaire dont l’utilisateur fixe l’écart donnant la note 0.
-- **Méthode Tmoyenne avec moins de cinq offres** : choix entre la variante du Guide romand (montant estimé par l’adjudicateur) et la formule fondée sur le prix moyen, selon ce qui a été annoncé (ATA/1113/2024).
-- **Classement** : note du prix, points pondérés, autres critères (note moyenne de 0 à 5 ou points déjà pondérés), total sur 500 points et rang.
-- **Seuils de bascule** : prix jusqu’auquel l’offre classée première conserve sa place ; prix auquel chaque autre offre passerait en tête ; note qu’il lui faudrait aux autres critères à prix inchangé.
-- **Comparaison des méthodes** : les mêmes offres notées selon chaque méthode, avec le changement éventuel de l’offre classée première.
-- **Courbes de notation** : graphique de toutes les méthodes, avec la position des offres sur la méthode annoncée.
-- **Avertissements** : pondération du prix hors de la fourchette de 20 % à 80 %, offre inférieure de plus de 30 % à la moyenne des autres, difficultés de la méthode Tmoyenne, courbe trop plate, deux offres seulement, égalité en tête.
-- **Résumé** prêt à copier : méthode, formule, classement, seuils et comparaison.
+- Saisie des critères d’adjudication et de leur pondération (prix et autres critères), avec contrôle du total.
+- Choix de la méthode de notation du prix : T1,5, T2, T3, T200, T300 et Tmoyenne du Guide romand pour les marchés publics (annexe T2), méthode proportionnelle, méthode linéaire paramétrable.
+- Pour la méthode choisie : points de prix (sur 100) obtenus par une offre selon son écart avec l’offre la moins chère, points perdus et avance nécessaire sur les autres critères pour revenir à égalité, pour des écarts de 5 % à 50 %.
+- Graphique des points selon l’écart, avec comparaison des autres méthodes.
+- En option, prix prévus (« Offre 1, 2, 3… », sans nom de soumissionnaire) : notes, points et points perdus pour chaque méthode, prix reportés sur le graphique.
+- Alertes : pondération hors fourchette, méthode qui attribue la note 0 à une partie des offres, Tmoyenne avec moins de cinq prix, obligation d’annoncer la méthode.
+- Résumé et texte prêt à copier pour les documents d’appel d’offres ; interface en français et en anglais.
+
+## Ce que l’outil ne couvre pas
+
+L’outil ne note pas les critères de qualité et ne classe pas des offres réelles ; il sert à choisir la méthode et la pondération avant l’appel d’offres. Il ne traite pas des offres anormalement basses, des variantes ni des rabais.
 
 ## Utilisation
 
-1. Choisir la méthode annoncée et, le cas échéant, l’écart de la méthode linéaire ou la variante et le montant estimé de la méthode Tmoyenne.
-2. Indiquer la pondération du prix et, si les documents d’appel d’offres le prévoient, l’arrondi des notes.
-3. Saisir les offres : soumissionnaire, prix TTC et résultat aux autres critères. Le bouton « Charger un exemple » remplit quatre offres fictives.
-4. Lire le classement, les seuils de bascule et la comparaison des méthodes, puis copier le résumé.
+1. Indiquer la pondération du prix et les autres critères.
+2. Choisir la méthode ; pour la méthode linéaire, fixer l’écart x ; pour Tmoyenne, indiquer le montant estimé.
+3. Lire l’effet d’un écart de prix dans le bandeau, le graphique et les tableaux ; activer la comparaison des méthodes pour arbitrer.
+4. Au besoin, saisir des prix prévus pour voir l’effet sur des écarts concrets.
+5. Copier le résumé ou le texte pour les documents d’appel d’offres.
 
-L’affichage peut être réglé en mode clair, sombre ou automatique.
+## État du droit
+
+Les formules reproduisent l’annexe T2 du Guide romand (version du 1er mai 2026). Les références jurisprudentielles figurent dans [SOURCES.md](SOURCES.md). Les modifications de l’outil sont consignées dans [CHANGELOG.md](CHANGELOG.md).
 
 ## Protection des données
 
-id est avocats ne collecte aucune donnée dans le cadre de l’utilisation de l’outil : les calculs sont effectués dans le navigateur et les montants saisis ne sont pas conservés. Seul le mode d’affichage est mémorisé dans le stockage local du navigateur (clé `idest-notation:theme`). L’outil est hébergé sur GitHub, qui peut collecter certaines informations, notamment au moyen de cookies, conformément à sa propre déclaration relative à la protection des données.
+Les calculs sont effectués dans le navigateur ; aucune donnée n’est conservée et aucun nom de soumissionnaire n’est demandé. Seuls le mode d’affichage et la langue choisis sont mémorisés localement sur l’appareil. L’outil est hébergé sur GitHub, qui peut collecter certaines informations selon sa propre déclaration relative à la protection des données.
+
+## Sources et tests
+
+- Sources : [SOURCES.md](SOURCES.md).
+- Cas de référence : [CAS-DE-TEST.md](CAS-DE-TEST.md).
+- Avertissement complet : [AVERTISSEMENT.md](AVERTISSEMENT.md).
 
 ## Licence
 
-© 2026 id est avocats Sàrl.
+Code sous licence GNU AGPL 3.0 ou version ultérieure ([LICENSE](LICENSE)). Textes juridiques également sous licence CC BY-NC 4.0, avec attribution à id est avocats Sàrl.
 
-Le code est distribué sous licence GNU Affero General Public License, version 3 ou toute version ultérieure (AGPL-3.0-or-later). Voir [LICENSE](LICENSE).
+## Contact
 
-Les tableaux et textes juridiques (formules, avertissements, principes, documentation) sont en outre mis à disposition sous licence [Creative Commons Attribution – Pas d’utilisation commerciale 4.0 International (CC BY-NC 4.0)](https://creativecommons.org/licenses/by-nc/4.0/deed.fr). Attribution : « id est avocats Sàrl, Marchés publics – notation du prix ».
+id est avocats Sàrl, Lausanne.
+
+---
+
+## English
+
+An online tool to choose the price scoring method when drafting tender documents: effect of a price difference under each method and weighting (Guide romand methods T1.5, T2, T3, T200, T300, Tmoyenne, proportional and linear), lead needed on the other criteria to compensate, optional expected prices without bidder names, chart and method comparison, copyable text for the tender documents. French and English interface. Calculations run in the browser and no data is stored. Code under the GNU AGPL 3.0 or any later version; legal texts also under CC BY-NC 4.0 (attribution: id est avocats Sàrl).

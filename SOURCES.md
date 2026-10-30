@@ -1,6 +1,6 @@
 # Sources
 
-© 2026 id est avocats Sàrl ; texte sous licence [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/deed.fr). Version 1.0 (beta), textes consultés en octobre 2026.
+© 2026 id est avocats Sàrl ; texte sous licence [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/deed.fr). Version 2.0 (beta), textes consultés en octobre 2026.
 
 ## Textes légaux
 
@@ -31,7 +31,7 @@
 | Proportionnelle | Note = 5 × prix le plus bas ÷ prix de l’offre |
 | Linéaire paramétrable | Note = 5 × [1 − (prix de l’offre − prix le plus bas) ÷ (prix le plus bas × x %)] ; note 0 dès x % au-dessus du prix le plus bas |
 
-Les notes sont comprises entre 0 et 5. Les points correspondent à la note multipliée par la pondération en pour cent, soit 500 points au plus.
+Les notes sont comprises entre 0 et 5. L’outil exprime les points sur 100 (note ÷ 5 × pondération en pour cent), ce qui revient au barème sur 500 points du Guide romand. L’avance nécessaire sur les autres critères est la différence de note moyenne pondérée (sur 5) qu’une offre plus chère doit obtenir pour compenser les points de prix perdus : points perdus ÷ (100 − pondération du prix) × 5.
 
 ## Jurisprudence
 
